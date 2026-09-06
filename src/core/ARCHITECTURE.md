@@ -23,6 +23,22 @@ may influence `src/core` simulation.
 - Nation metadata (id, name, code) is distinct from future mutable gameplay state.
 - World creation cannot depend on runtime environment or randomness.
 
+## Regions & Strategic Map
+
+- Region is immutable canonical geographic identity.
+- StrategicMap defines static strategic adjacency.
+- Connections represent strategic adjacency only.
+- Physical coordinates/polygons are presentation concerns and are not part of G0.4.
+- Core graph creation and traversal are environment-independent.
+
+## Region Ownership
+
+- RegionOwnership is mutable-in-concept political game state.
+- Ownership is deliberately separate from Region and StrategicMap.
+- Initial ownership is canonical campaign setup.
+- Generic ownership validation requires exactly one owner per region.
+- Future territorial transfer must replace state rather than mutate canonical map data.
+
 ## Structure
 
 ```
@@ -30,6 +46,9 @@ src/core/
   model/          pure data types
     gameState.ts
     nation.ts
+    region.ts
+    regionOwnership.ts
+    strategicMap.ts
     turnOrder.ts
     turnResult.ts
     worldState.ts

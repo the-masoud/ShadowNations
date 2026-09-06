@@ -7,6 +7,7 @@ import {
   WorldValidationError,
 } from "../../src/core/model/worldState";
 import type { WorldState } from "../../src/core/model/worldState";
+import { createInitialStrategicMap } from "../../src/core/model/strategicMap";
 import { createInitialGameState } from "../../src/core/model/gameState";
 import { resolveTurn } from "../../src/core/simulation/resolveTurn";
 
@@ -102,6 +103,8 @@ describe("validateWorldState", () => {
         { id: "a", name: "A", code: "A1" },
         { id: "a", name: "B", code: "B1" },
       ],
+      map: createInitialStrategicMap(),
+      regionOwnership: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -115,6 +118,8 @@ describe("validateWorldState", () => {
         { id: "a", name: "A", code: "X" },
         { id: "b", name: "B", code: "X" },
       ],
+      map: createInitialStrategicMap(),
+      regionOwnership: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -125,6 +130,8 @@ describe("validateWorldState", () => {
   it("empty ID fails", () => {
     const world: WorldState = {
       nations: [{ id: "", name: "A", code: "A1" }],
+      map: createInitialStrategicMap(),
+      regionOwnership: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow("Empty nation ID");
@@ -133,6 +140,8 @@ describe("validateWorldState", () => {
   it("empty name fails", () => {
     const world: WorldState = {
       nations: [{ id: "a", name: "", code: "A1" }],
+      map: createInitialStrategicMap(),
+      regionOwnership: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -143,6 +152,8 @@ describe("validateWorldState", () => {
   it("empty code fails", () => {
     const world: WorldState = {
       nations: [{ id: "a", name: "A", code: "" }],
+      map: createInitialStrategicMap(),
+      regionOwnership: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
