@@ -2,6 +2,7 @@ import type { GameState } from "../model/gameState.js";
 import type { TurnOrder } from "../model/turnOrder.js";
 import type { TurnResult } from "../model/turnResult.js";
 import { validateGameState } from "./validateGameState.js";
+import { resetActionPointsForNewTurn } from "./resetActionPointsForNewTurn.js";
 
 export class InvalidPhaseError extends Error {
   constructor(expected: string, actual: string) {
@@ -53,6 +54,7 @@ export function resolveTurn(
     phase: "planning",
     playerNationId: state.playerNationId,
     world: state.world,
+    planning: resetActionPointsForNewTurn(state.planning),
   };
 
   const result: TurnResult = {

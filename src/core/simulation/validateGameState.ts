@@ -2,6 +2,7 @@ import type { GameState, GamePhase } from "../model/gameState.js";
 import { validateWorldState, getNationById } from "../model/worldState.js";
 import { validateStrategicMap } from "../model/strategicMap.js";
 import { validateRegionOwnership } from "../model/regionOwnership.js";
+import { validatePlanningState } from "./validatePlanningState.js";
 
 const VALID_PHASES: readonly GamePhase[] = ["planning", "resolution"];
 
@@ -39,4 +40,5 @@ export function validateGameState(state: Readonly<GameState>): void {
   validateStrategicMap(state.world.map);
   validateRegionOwnership(state.world);
   getNationById(state.world, state.playerNationId);
+  validatePlanningState(state);
 }

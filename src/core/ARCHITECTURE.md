@@ -50,11 +50,23 @@ may influence `src/core` simulation.
 - No-op transitions are referentially stable.
 - Future gameplay systems must authorize actions before using structural transitions.
 
+## Action Points & Planning
+
+- AP is per nation and per planning turn.
+- Canonical initial budget is 6 AP per nation.
+- 6 is initial configuration, not a structural invariant.
+- PlanningState is separate from WorldState.
+- AP spending is immutable and planning-phase only.
+- spendActionPoints is a structural primitive, not gameplay authorization.
+- resolveTurn replenishes remaining AP to maximum for the next turn.
+- Future operations will define their AP cost and authorization separately.
+
 ## Structure
 
 ```
 src/core/
   model/          pure data types
+    actionPoints.ts
     gameState.ts
     nation.ts
     region.ts
@@ -64,7 +76,10 @@ src/core/
     turnResult.ts
     worldState.ts
   simulation/     pure functions
+    resetActionPointsForNewTurn.ts
     resolveTurn.ts
     setRegionOwner.ts
+    spendActionPoints.ts
     validateGameState.ts
+    validatePlanningState.ts
 ```
