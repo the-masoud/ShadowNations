@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G0.3 — World Model & Nations
+**Current milestone:** G0.7 — G0 Acceptance
 
-**Next milestone:** G0.4 — Regions & Strategic Map Graph
+**Next milestone:** G1.1 — Action Points & Planning
