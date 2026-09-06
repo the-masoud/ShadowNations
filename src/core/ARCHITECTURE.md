@@ -39,6 +39,17 @@ may influence `src/core` simulation.
 - Generic ownership validation requires exactly one owner per region.
 - Future territorial transfer must replace state rather than mutate canonical map data.
 
+## State Integrity Boundary
+
+- GameState must satisfy explicit structural validation.
+- Canonical Nation and StrategicMap data are static identity/geography.
+- RegionOwnership is mutable-in-concept game state.
+- State transitions return replacement state rather than mutate input.
+- setRegionOwner is a low-level structural primitive, not a gameplay rule.
+- Static world references are preserved when safe.
+- No-op transitions are referentially stable.
+- Future gameplay systems must authorize actions before using structural transitions.
+
 ## Structure
 
 ```
@@ -54,4 +65,6 @@ src/core/
     worldState.ts
   simulation/     pure functions
     resolveTurn.ts
+    setRegionOwner.ts
+    validateGameState.ts
 ```

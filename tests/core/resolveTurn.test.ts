@@ -80,10 +80,10 @@ describe("resolveTurn", () => {
   });
 
   it("playerNationId remains unchanged", () => {
-    const state = planningState({ playerNationId: "umbra" });
-    const { state: next } = resolveTurn(state, [passOrder("o1", "umbra")]);
+    const state = planningState({ playerNationId: "dravos" });
+    const { state: next } = resolveTurn(state, [passOrder("o1", "dravos")]);
 
-    expect(next.playerNationId).toBe("umbra");
+    expect(next.playerNationId).toBe("dravos");
   });
 
   it("resolving from non-planning phase fails", () => {

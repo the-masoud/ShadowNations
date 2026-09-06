@@ -1,6 +1,7 @@
 import type { GameState } from "../model/gameState.js";
 import type { TurnOrder } from "../model/turnOrder.js";
 import type { TurnResult } from "../model/turnResult.js";
+import { validateGameState } from "./validateGameState.js";
 
 export class InvalidPhaseError extends Error {
   constructor(expected: string, actual: string) {
@@ -37,6 +38,8 @@ export function resolveTurn(
   state: Readonly<GameState>,
   orders: readonly TurnOrder[],
 ): { state: GameState; result: TurnResult } {
+  validateGameState(state);
+
   if (state.phase !== "planning") {
     throw new InvalidPhaseError("planning", state.phase);
   }
