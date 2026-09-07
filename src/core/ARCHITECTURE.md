@@ -227,12 +227,25 @@ may influence `src/core` simulation.
 - Deterministic and read-only.
 - No personality, planning, or actions in G3.1.
 
+## AI Personalities (G3.2)
+
+- G3.2 defines static personality configuration.
+- Every canonical nation has one fixed profile.
+- Four traits: assertiveness, caution, diplomacyAffinity, intelligenceAffinity.
+- Trait range is integer 0..100.
+- Personality is not GameState.
+- Personality is separate from AiPerception.
+- Lookup is deterministic.
+- No planning, scoring, or action selection exists in G3.2.
+- G3.3 is the next planning milestone.
+
 ## Structure
 
 ```
 src/core/
-  ai/             derived AI perception
+  ai/             derived AI perception and personalities
     aiPerception.ts
+    aiPersonality.ts
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts

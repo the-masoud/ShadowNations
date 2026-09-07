@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G3.1 — AI Perception
+**Current milestone:** G3.2 — AI Personalities
 
-**Next milestone:** G3.2 — AI Personalities
+**Next milestone:** G3.3 — AI Planning
