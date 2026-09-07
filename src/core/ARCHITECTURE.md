@@ -145,6 +145,19 @@ may influence `src/core` simulation.
 - G2.3 will introduce diplomacy separately.
 - Later gameplay systems authorize influence changes.
 
+## Diplomacy (G2.3)
+
+- Diplomacy is an objective bilateral WorldState relationship.
+- Statuses are: friendly, neutral, hostile.
+- Self relationships do not exist.
+- Exactly one stored relationship exists per unordered nation pair.
+- Pair storage uses canonical world nation order (nationA precedes nationB).
+- Diplomacy is separate from directional influence.
+- Diplomacy does not automatically change influence or strategic stats.
+- setDiplomaticStatus is a low-level structural primitive.
+- Diplomacy does not automatically drift across turns.
+- Later political systems authorize diplomatic changes.
+
 ## Structure
 
 ```
@@ -152,6 +165,7 @@ src/core/
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
+    diplomaticRelationship.ts
     doubleAgent.ts
     gameEvent.ts
     gameState.ts
@@ -182,6 +196,7 @@ src/core/
     resolveTurn.ts
     runCounterintelligenceSweep.ts
     setCounterintelligenceAwareness.ts
+    setDiplomaticStatus.ts
     setIntelligenceNetworkLevel.ts
     setNationInfluence.ts
     setNationStrategicStat.ts

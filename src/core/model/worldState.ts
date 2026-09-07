@@ -4,6 +4,7 @@ import { createInitialStrategicMap } from "./strategicMap.js";
 import type { StrategicMap } from "./strategicMap.js";
 import { createInitialNationStrategicStats, validateNationStrategicStats, type NationStrategicStats } from "./nationStrategicStats.js";
 import { createInitialNationInfluence, validateNationInfluence, type NationInfluence } from "./nationInfluence.js";
+import { createInitialDiplomaticRelationships, validateDiplomaticRelationships, type DiplomaticRelationship } from "./diplomaticRelationship.js";
 
 export class UnknownNationError extends Error {
   constructor(nationId: NationId) {
@@ -25,6 +26,7 @@ export interface WorldState {
   readonly regionOwnership: readonly RegionOwnership[];
   readonly nationStrategicStats: readonly NationStrategicStats[];
   readonly nationInfluence: readonly NationInfluence[];
+  readonly diplomaticRelationships: readonly DiplomaticRelationship[];
 }
 
 export function createInitialWorldState(): WorldState {
@@ -61,6 +63,7 @@ export function createInitialWorldState(): WorldState {
     ],
     nationStrategicStats: createInitialNationStrategicStats(nations),
     nationInfluence: createInitialNationInfluence(nations),
+    diplomaticRelationships: createInitialDiplomaticRelationships(nations),
   };
 }
 
@@ -103,4 +106,5 @@ export function validateWorldState(world: Readonly<WorldState>): void {
 
   validateNationStrategicStats(world);
   validateNationInfluence(world);
+  validateDiplomaticRelationships(world);
 }
