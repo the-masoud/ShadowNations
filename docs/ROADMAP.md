@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G4.1 — Strategic Map Renderer
+**Current milestone:** G4.2 — Nation & Region UI
 
-**Next milestone:** G4.2 — Nation & Region UI
+**Next milestone:** G4.3 — Intelligence Dashboard
