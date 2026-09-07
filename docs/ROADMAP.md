@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G2.8 — G2 Acceptance
+**Current milestone:** G3.1 — AI Perception
 
-**Next milestone:** G3.1 — AI Perception
+**Next milestone:** G3.2 — AI Personalities

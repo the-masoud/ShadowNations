@@ -213,10 +213,26 @@ may influence `src/core` simulation.
 - Pressure 100 causes no automatic coup/regime change.
 - No automatic proxy escalation or sabotage triggered by pressure.
 
+## AI Perception (G3.1)
+
+- G3 begins with derived observer-specific perception.
+- Perception is not persistent GameState.
+- Self strategic stats are exact.
+- Observer AP is exact.
+- Foreign strategic stats are visibility-gated: unknown exposes nothing, limited exposes low/medium/high bands, known exposes exact values.
+- Political data is observer-centric (O->T influence, O->T regime pressure, bilateral diplomacy).
+- Network data is observer -> target.
+- Defensive awareness uses observer as defender.
+- Only observer-involved proxy conflicts are exposed.
+- Deterministic and read-only.
+- No personality, planning, or actions in G3.1.
+
 ## Structure
 
 ```
 src/core/
+  ai/             derived AI perception
+    aiPerception.ts
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
