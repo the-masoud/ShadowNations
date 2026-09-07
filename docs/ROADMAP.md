@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G3.6 — Simulation Harness
+**Current milestone:** G3.7 — G3 Acceptance
 
-**Next milestone:** G3.7 — G3 Acceptance
+**Next milestone:** G4.1 — Strategic Map Renderer
