@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G3.3 — AI Planning
+**Current milestone:** G3.4 — AI Diplomacy
 
-**Next milestone:** G3.4 — AI Diplomacy
+**Next milestone:** G3.5 — AI Espionage

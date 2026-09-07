@@ -254,14 +254,29 @@ may influence `src/core` simulation.
 - No AP is spent.
 - G3.4 and G3.5 select concrete diplomacy/espionage behavior later.
 
+## AI Diplomacy (G3.4)
+
+- G3.4 consumes AiPerception + diplomacy AiPlan.
+- Plan target is authoritative; G3.4 does not rescore or reselect targets.
+- Approved actions: cultivate political influence, diplomatic outreach, stabilize government, pass.
+- Action selection respects perception boundaries: diplomaticStatus, observerInfluence, strategicStats, remaining AP.
+- Stabilization requires perceived evidence that stability is below 100.
+- Unknown and limited-high stability do not permit stabilization.
+- Accepted G2.4 AP costs are respected; no AP is spent.
+- No gameplay operation is executed.
+- Decisions are deterministic and non-persistent.
+- Regime pressure, proxy conflict behavior, and espionage are outside G3.4.
+- G3.5 AI Espionage is the next milestone.
+
 ## Structure
 
 ```
 src/core/
-  ai/             derived AI perception, personalities, and planning
+  ai/             derived AI perception, personalities, planning, and diplomacy
     aiPerception.ts
     aiPersonality.ts
     aiPlanning.ts
+    aiDiplomacy.ts
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
@@ -325,4 +340,6 @@ src/core/
     validateIntelligenceState.ts
     validatePlanningState.ts
     validateProxyConflicts.ts
+  tests/core/
+    g34.test.ts
 ```
