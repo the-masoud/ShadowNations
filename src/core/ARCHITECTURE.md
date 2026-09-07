@@ -61,6 +61,42 @@ may influence `src/core` simulation.
 - resolveTurn replenishes remaining AP to maximum for the next turn.
 - Future operations will define their AP cost and authorization separately.
 
+## Intelligence Visibility (G1.2)
+
+- IntelligenceVisibility is `"unknown" | "limited" | "known"`.
+- NationIntelligenceVisibility is a (observer, target, visibility) triple.
+- 36 entries cover all nation pairs; self-pairs are always `"known"`.
+- Missing pair is a data-integrity error.
+- Visibility transition is an immutable primitive.
+
+## Intelligence Networks (G1.3)
+
+- IntelligenceNetworkLevel is `"none" | "foothold" | "established" | "deep"`.
+- 30 non-self entries; self-pairs are excluded by invariant.
+- Network level ordering is strictly forward-only: none → foothold → established → deep.
+- getNextIntelligenceNetworkLevel returns same level when already at maximum.
+- setIntelligenceNetworkLevel is an immutable transition primitive.
+
+## Intelligence Agents & Assets (G1.4)
+
+- 12 canonical agents, two per nation.
+- Each agent has a fixed ownerNationId.
+- IntelligenceAssetAccess is `"limited" | "high"`.
+- Assets are stored in a flat list; duplicate asset IDs are rejected.
+- addIntelligenceAsset is an immutable structural primitive.
+
+## Espionage Operations (G1.5)
+
+- All espionage operations are planning-phase only.
+- Self-target espionage is always forbidden.
+- All operations require an actor-owned agent.
+- AP costs: BUILD_NETWORK=2, GATHER_INTELLIGENCE=1, RECRUIT_ASSET=2.
+- Operations fail atomically; no partial state changes on error.
+- buildIntelligenceNetwork advances network level by one step.
+- gatherIntelligence requires sufficient network level for the desired visibility step.
+- recruitIntelligenceAsset requires established or deep network level.
+- Operation ordering within a turn is deterministic and idempotent per call.
+
 ## Structure
 
 ```
@@ -68,6 +104,11 @@ src/core/
   model/          pure data types
     actionPoints.ts
     gameState.ts
+    intelligenceAgent.ts
+    intelligenceAsset.ts
+    intelligenceNetwork.ts
+    intelligenceState.ts
+    intelligenceVisibility.ts
     nation.ts
     region.ts
     regionOwnership.ts
@@ -76,10 +117,18 @@ src/core/
     turnResult.ts
     worldState.ts
   simulation/     pure functions
+    addIntelligenceAsset.ts
+    buildIntelligenceNetwork.ts
+    gatherIntelligence.ts
+    intelligenceErrors.ts
+    recruitIntelligenceAsset.ts
     resetActionPointsForNewTurn.ts
     resolveTurn.ts
+    setIntelligenceNetworkLevel.ts
+    setNationVisibility.ts
     setRegionOwner.ts
     spendActionPoints.ts
     validateGameState.ts
+    validateIntelligenceState.ts
     validatePlanningState.ts
 ```

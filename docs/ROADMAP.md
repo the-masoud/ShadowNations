@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G0.7 — G0 Acceptance
+**Current milestone:** G1.5 — Espionage Operations
 
-**Next milestone:** G1.1 — Action Points & Planning
+**Next milestone:** G1.6 — Counterintelligence

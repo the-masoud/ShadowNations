@@ -2,6 +2,10 @@ import {
   createInitialPlanningState,
   type PlanningState,
 } from "./actionPoints.js";
+import {
+  createInitialIntelligenceState,
+  type IntelligenceState,
+} from "./intelligenceState.js";
 import { createInitialWorldState } from "./worldState.js";
 import type { WorldState } from "./worldState.js";
 
@@ -13,6 +17,7 @@ export interface GameState {
   readonly playerNationId: string;
   readonly world: WorldState;
   readonly planning: PlanningState;
+  readonly intelligence: IntelligenceState;
 }
 
 export function createInitialGameState(): GameState {
@@ -23,5 +28,6 @@ export function createInitialGameState(): GameState {
     playerNationId: "solaris",
     world,
     planning: createInitialPlanningState(world.nations),
+    intelligence: createInitialIntelligenceState(world.nations),
   };
 }

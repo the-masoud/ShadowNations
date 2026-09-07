@@ -55,6 +55,7 @@ export function resolveTurn(
     playerNationId: state.playerNationId,
     world: state.world,
     planning: resetActionPointsForNewTurn(state.planning),
+    intelligence: state.intelligence,
   };
 
   const result: TurnResult = {
