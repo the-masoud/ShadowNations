@@ -4,6 +4,8 @@ import type { NationIntelligenceVisibility } from "./intelligenceVisibility.js";
 import type { IntelligenceNetwork } from "./intelligenceNetwork.js";
 import type { IntelligenceAgent } from "./intelligenceAgent.js";
 import type { IntelligenceAsset } from "./intelligenceAsset.js";
+import type { CounterintelligenceAwareness } from "./counterintelligenceAwareness.js";
+import type { DoubleAgentControl } from "./doubleAgent.js";
 import { CANONICAL_AGENTS } from "./intelligenceAgent.js";
 import { getNationById } from "./worldState.js";
 
@@ -12,6 +14,8 @@ export interface IntelligenceState {
   readonly networks: readonly IntelligenceNetwork[];
   readonly agents: readonly IntelligenceAgent[];
   readonly assets: readonly IntelligenceAsset[];
+  readonly counterintelligenceAwareness: readonly CounterintelligenceAwareness[];
+  readonly doubleAgents: readonly DoubleAgentControl[];
 }
 
 export function createInitialIntelligenceState(
@@ -40,10 +44,30 @@ export function createInitialIntelligenceState(
     }
   }
 
+  const counterintelligenceAwareness: CounterintelligenceAwareness[] = [];
+  for (const defender of nations) {
+    for (const intruder of nations) {
+      if (defender.id === intruder.id) continue;
+      counterintelligenceAwareness.push({
+        defenderNationId: defender.id,
+        intruderNationId: intruder.id,
+        level: "unaware",
+      });
+    }
+  }
+
   const agents: IntelligenceAgent[] = [...CANONICAL_AGENTS];
   const assets: IntelligenceAsset[] = [];
+  const doubleAgents: DoubleAgentControl[] = [];
 
-  return { nationVisibility, networks, agents, assets };
+  return {
+    nationVisibility,
+    networks,
+    agents,
+    assets,
+    counterintelligenceAwareness,
+    doubleAgents,
+  };
 }
 
 export class SelfIntelligenceNetworkError extends Error {

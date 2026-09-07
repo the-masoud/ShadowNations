@@ -5,6 +5,7 @@ import {
 } from "../model/intelligenceVisibility.js";
 import { VALID_NETWORK_LEVELS } from "../model/intelligenceNetwork.js";
 import { VALID_ASSET_ACCESS_VALUES } from "../model/intelligenceAsset.js";
+import { VALID_COUNTERINTELLIGENCE_AWARENESS_LEVELS } from "../model/counterintelligenceAwareness.js";
 
 export { MissingIntelligenceVisibilityError };
 
@@ -39,6 +40,42 @@ export class InvalidIntelligenceNetworkLevelError extends Error {
       `Invalid intelligence network level: expected "none", "foothold", "established", or "deep", got "${level}"`,
     );
     this.name = "InvalidIntelligenceNetworkLevelError";
+  }
+}
+
+export class InvalidCounterintelligenceAwarenessLevelError extends Error {
+  constructor(level: string) {
+    super(
+      `Invalid counterintelligence awareness level: expected "unaware", "suspected", or "identified", got "${level}"`,
+    );
+    this.name = "InvalidCounterintelligenceAwarenessLevelError";
+  }
+}
+
+export class SelfCounterintelligenceAwarenessError extends Error {
+  constructor(nationId: string) {
+    super(
+      `Self-counterintelligence awareness pair not allowed for nation: "${nationId}"`,
+    );
+    this.name = "SelfCounterintelligenceAwarenessError";
+  }
+}
+
+export class DuplicateDoubleAgentControlError extends Error {
+  constructor(assetId: string) {
+    super(
+      `Duplicate double-agent control for asset "${assetId}"`,
+    );
+    this.name = "DuplicateDoubleAgentControlError";
+  }
+}
+
+export class InvalidDoubleAgentControllerError extends Error {
+  constructor(assetId: string, message: string) {
+    super(
+      `Invalid double-agent controller for asset "${assetId}": ${message}`,
+    );
+    this.name = "InvalidDoubleAgentControllerError";
   }
 }
 
@@ -210,5 +247,92 @@ export function validateIntelligenceState(
         `Invalid asset access for asset "${asset.id}": expected "limited" or "high", got "${asset.access}"`,
       );
     }
+  }
+
+  const seenAwarenessPairs = new Set<string>();
+
+  for (const entry of state.intelligence.counterintelligenceAwareness) {
+    const pairKey = `${entry.defenderNationId}|${entry.intruderNationId}`;
+
+    if (entry.defenderNationId === entry.intruderNationId) {
+      throw new SelfCounterintelligenceAwarenessError(entry.defenderNationId);
+    }
+
+    if (seenAwarenessPairs.has(pairKey)) {
+      throw new IntelligenceValidationError(
+        `Duplicate counterintelligence awareness entry for defender "${entry.defenderNationId}" / intruder "${entry.intruderNationId}"`,
+      );
+    }
+    seenAwarenessPairs.add(pairKey);
+
+    if (!nationIds.has(entry.defenderNationId)) {
+      throw new IntelligenceValidationError(
+        `Counterintelligence awareness entry references unknown defender nation: "${entry.defenderNationId}"`,
+      );
+    }
+
+    if (!nationIds.has(entry.intruderNationId)) {
+      throw new IntelligenceValidationError(
+        `Counterintelligence awareness entry references unknown intruder nation: "${entry.intruderNationId}"`,
+      );
+    }
+
+    if (
+      !(VALID_COUNTERINTELLIGENCE_AWARENESS_LEVELS as readonly string[]).includes(
+        entry.level,
+      )
+    ) {
+      throw new InvalidCounterintelligenceAwarenessLevelError(entry.level);
+    }
+  }
+
+  for (const defender of state.world.nations) {
+    for (const intruder of state.world.nations) {
+      if (defender.id === intruder.id) continue;
+      const pairKey = `${defender.id}|${intruder.id}`;
+      if (!seenAwarenessPairs.has(pairKey)) {
+        throw new IntelligenceValidationError(
+          `Missing counterintelligence awareness entry for defender "${defender.id}" / intruder "${intruder.id}"`,
+        );
+      }
+    }
+  }
+
+  const seenDoubleAgentAssetIds = new Set<string>();
+
+  for (const control of state.intelligence.doubleAgents) {
+    const asset = state.intelligence.assets.find(
+      (a) => a.id === control.assetId,
+    );
+    if (!asset) {
+      throw new IntelligenceValidationError(
+        `Double-agent control references unknown asset: "${control.assetId}"`,
+      );
+    }
+
+    if (!nationIds.has(control.controllerNationId)) {
+      throw new IntelligenceValidationError(
+        `Double-agent control references unknown controller nation: "${control.controllerNationId}"`,
+      );
+    }
+
+    if (asset.targetNationId !== control.controllerNationId) {
+      throw new InvalidDoubleAgentControllerError(
+        control.assetId,
+        `asset target "${asset.targetNationId}" does not match controller "${control.controllerNationId}"`,
+      );
+    }
+
+    if (asset.ownerNationId === control.controllerNationId) {
+      throw new InvalidDoubleAgentControllerError(
+        control.assetId,
+        `asset owner "${asset.ownerNationId}" is the same as controller`,
+      );
+    }
+
+    if (seenDoubleAgentAssetIds.has(control.assetId)) {
+      throw new DuplicateDoubleAgentControlError(control.assetId);
+    }
+    seenDoubleAgentAssetIds.add(control.assetId);
   }
 }

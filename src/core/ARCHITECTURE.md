@@ -97,12 +97,26 @@ may influence `src/core` simulation.
 - recruitIntelligenceAsset requires established or deep network level.
 - Operation ordering within a turn is deterministic and idempotent per call.
 
+## Counterintelligence (G1.6)
+
+- Awareness is defender-relative knowledge of foreign presence.
+- Levels: unaware / suspected / identified.
+- Sweep is deterministic and costs AP even when nothing is discovered.
+- DoubleAgentControl is separate from IntelligenceAsset.
+- Turning an asset does not change its original owner/target identity.
+- False intelligence in G1.6 degrades hostile visibility by one level.
+- No fabricated factual reports exist yet.
+- Counterintelligence state persists across turns.
+- No randomness.
+
 ## Structure
 
 ```
 src/core/
   model/          pure data types
     actionPoints.ts
+    counterintelligenceAwareness.ts
+    doubleAgent.ts
     gameState.ts
     intelligenceAgent.ts
     intelligenceAsset.ts
@@ -117,17 +131,22 @@ src/core/
     turnResult.ts
     worldState.ts
   simulation/     pure functions
+    addDoubleAgentControl.ts
     addIntelligenceAsset.ts
     buildIntelligenceNetwork.ts
+    feedFalseIntelligence.ts
     gatherIntelligence.ts
     intelligenceErrors.ts
     recruitIntelligenceAsset.ts
     resetActionPointsForNewTurn.ts
     resolveTurn.ts
+    runCounterintelligenceSweep.ts
+    setCounterintelligenceAwareness.ts
     setIntelligenceNetworkLevel.ts
     setNationVisibility.ts
     setRegionOwner.ts
     spendActionPoints.ts
+    turnIntelligenceAsset.ts
     validateGameState.ts
     validateIntelligenceState.ts
     validatePlanningState.ts
