@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G1.8 — G1 Acceptance
+**Current milestone:** G2.4 — Political Operations
 
-**Next milestone:** G2.1 — Nation Strategic Stats
+**Next milestone:** G2.5 — Covert Sabotage
