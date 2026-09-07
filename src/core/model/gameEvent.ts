@@ -4,6 +4,7 @@ import type { AssetId, IntelligenceAssetAccess } from "./intelligenceAsset.js";
 import type { IntelligenceNetworkLevel } from "./intelligenceNetwork.js";
 import type { IntelligenceVisibility } from "./intelligenceVisibility.js";
 import type { CounterintelligenceAwarenessLevel } from "./counterintelligenceAwareness.js";
+import type { DiplomaticStatus } from "./diplomaticRelationship.js";
 
 export interface IntelligenceNetworkBuiltEvent {
   readonly type: "intelligence-network-built";
@@ -77,6 +78,36 @@ export interface TurnAdvancedEvent {
   readonly processedOrderIds: readonly string[];
 }
 
+export interface PoliticalInfluenceCultivatedEvent {
+  readonly type: "political-influence-cultivated";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly previousInfluence: number;
+  readonly newInfluence: number;
+  readonly actionPointCost: number;
+}
+
+export interface DiplomaticOutreachConductedEvent {
+  readonly type: "diplomatic-outreach-conducted";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly previousStatus: DiplomaticStatus;
+  readonly newStatus: DiplomaticStatus;
+  readonly actionPointCost: number;
+}
+
+export interface GovernmentStabilizedEvent {
+  readonly type: "government-stabilized";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly previousStability: number;
+  readonly newStability: number;
+  readonly actionPointCost: number;
+}
+
 export type GameEvent =
   | IntelligenceNetworkBuiltEvent
   | IntelligenceGatheredEvent
@@ -84,4 +115,7 @@ export type GameEvent =
   | CounterintelligenceSweepEvent
   | IntelligenceAssetTurnedEvent
   | FalseIntelligenceFedEvent
-  | TurnAdvancedEvent;
+  | TurnAdvancedEvent
+  | PoliticalInfluenceCultivatedEvent
+  | DiplomaticOutreachConductedEvent
+  | GovernmentStabilizedEvent;

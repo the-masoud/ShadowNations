@@ -158,6 +158,19 @@ may influence `src/core` simulation.
 - Diplomacy does not automatically drift across turns.
 - Later political systems authorize diplomatic changes.
 
+## Political Operations (G2.4)
+
+- G2.4 contains three gameplay operations.
+- Political operations occur immediately in planning phase.
+- Operations consume actor AP.
+- Structural primitives remain authorization-free.
+- Cultivate influence increases directional NationInfluence.
+- Diplomatic outreach improves bilateral diplomacy one level.
+- Stabilization increases target stability.
+- Operations return deterministic domain events.
+- No hidden coupling exists.
+- Sabotage/regime pressure/proxy conflict are later milestones.
+
 ## Structure
 
 ```
@@ -188,9 +201,12 @@ src/core/
     addDoubleAgentControl.ts
     addIntelligenceAsset.ts
     buildIntelligenceNetwork.ts
+    conductDiplomaticOutreach.ts
+    cultivatePoliticalInfluence.ts
     feedFalseIntelligence.ts
     gatherIntelligence.ts
     intelligenceErrors.ts
+    politicalOperationErrors.ts
     recruitIntelligenceAsset.ts
     resetActionPointsForNewTurn.ts
     resolveTurn.ts
@@ -203,6 +219,7 @@ src/core/
     setNationVisibility.ts
     setRegionOwner.ts
     spendActionPoints.ts
+    stabilizeGovernment.ts
     turnIntelligenceAsset.ts
     validateGameState.ts
     validateIntelligenceState.ts
