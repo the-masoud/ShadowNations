@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G3.7 — G3 Acceptance
+**Current milestone:** G4.1 — Strategic Map Renderer
 
-**Next milestone:** G4.1 — Strategic Map Renderer
+**Next milestone:** G4.2 — Nation & Region UI
