@@ -42,6 +42,7 @@ function minimalWorld(overrides?: Partial<WorldState>): WorldState {
       connections: [],
     },
     regionOwnership: [{ regionId: "r1", ownerNationId: "a" }],
+    nationStrategicStats: [{ nationId: "a", stability: 50, publicSupport: 50, internalSecurity: 50 }],
     ...overrides,
   };
 }

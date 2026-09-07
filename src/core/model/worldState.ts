@@ -2,6 +2,7 @@ import type { Nation, NationId } from "./nation.js";
 import type { RegionOwnership } from "./regionOwnership.js";
 import { createInitialStrategicMap } from "./strategicMap.js";
 import type { StrategicMap } from "./strategicMap.js";
+import { createInitialNationStrategicStats, validateNationStrategicStats, type NationStrategicStats } from "./nationStrategicStats.js";
 
 export class UnknownNationError extends Error {
   constructor(nationId: NationId) {
@@ -21,18 +22,20 @@ export interface WorldState {
   readonly nations: readonly Nation[];
   readonly map: StrategicMap;
   readonly regionOwnership: readonly RegionOwnership[];
+  readonly nationStrategicStats: readonly NationStrategicStats[];
 }
 
 export function createInitialWorldState(): WorldState {
+  const nations: readonly Nation[] = [
+    { id: "solaris", name: "Solaris", code: "SOL" },
+    { id: "dravos", name: "Dravos", code: "DRA" },
+    { id: "norvia", name: "Norvia", code: "NOR" },
+    { id: "veloria", name: "Veloria", code: "VEL" },
+    { id: "karsen", name: "Karsen", code: "KAR" },
+    { id: "arkania", name: "Arkania", code: "ARK" },
+  ];
   return {
-    nations: [
-      { id: "solaris", name: "Solaris", code: "SOL" },
-      { id: "dravos", name: "Dravos", code: "DRA" },
-      { id: "norvia", name: "Norvia", code: "NOR" },
-      { id: "veloria", name: "Veloria", code: "VEL" },
-      { id: "karsen", name: "Karsen", code: "KAR" },
-      { id: "arkania", name: "Arkania", code: "ARK" },
-    ],
+    nations,
     map: createInitialStrategicMap(),
     regionOwnership: [
       { regionId: "sunreach", ownerNationId: "solaris" },
@@ -54,6 +57,7 @@ export function createInitialWorldState(): WorldState {
       { regionId: "duskfall", ownerNationId: "arkania" },
       { regionId: "eastern-reach", ownerNationId: "arkania" },
     ],
+    nationStrategicStats: createInitialNationStrategicStats(nations),
   };
 }
 
@@ -93,4 +97,6 @@ export function validateWorldState(world: Readonly<WorldState>): void {
     ids.add(nation.id);
     codes.add(nation.code);
   }
+
+  validateNationStrategicStats(world);
 }

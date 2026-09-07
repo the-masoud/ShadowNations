@@ -120,6 +120,18 @@ may influence `src/core` simulation.
 - `GameEvent` is a discriminated union on the `type` field.
 - Operations that fail do not emit events (they throw errors).
 
+## Nation Strategic Stats (G2.1)
+
+- Nation remains immutable identity data.
+- NationStrategicStats represents objective mutable national condition.
+- Stats are: stability, publicSupport, internalSecurity.
+- Values are integer 0..100.
+- Stats live in WorldState as `nationStrategicStats`.
+- IntelligenceState remains observer-relative knowledge.
+- setNationStrategicStat is a low-level structural primitive.
+- No automatic drift exists in G2.1.
+- Future G2 systems authorize political/stat changes.
+
 ## Structure
 
 ```
@@ -136,6 +148,7 @@ src/core/
     intelligenceState.ts
     intelligenceVisibility.ts
     nation.ts
+    nationStrategicStats.ts
     operationResult.ts
     region.ts
     regionOwnership.ts
@@ -156,6 +169,7 @@ src/core/
     runCounterintelligenceSweep.ts
     setCounterintelligenceAwareness.ts
     setIntelligenceNetworkLevel.ts
+    setNationStrategicStat.ts
     setNationVisibility.ts
     setRegionOwner.ts
     spendActionPoints.ts
