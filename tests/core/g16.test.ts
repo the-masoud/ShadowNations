@@ -68,9 +68,9 @@ function passOrder(id: string, nationId = "solaris"): TurnOrder {
 
 function setupSolarisPresenceInDravos(state: GameState): GameState {
   let s = state;
-  s = buildIntelligenceNetwork(s, "solaris", "dravos", "solaris-echo");
-  s = buildIntelligenceNetwork(s, "solaris", "dravos", "solaris-echo");
-  s = recruitIntelligenceAsset(s, "solaris", "dravos", "solaris-echo", "asset-dravos-001");
+  s = buildIntelligenceNetwork(s, "solaris", "dravos", "solaris-echo").state;
+  s = buildIntelligenceNetwork(s, "solaris", "dravos", "solaris-echo").state;
+  s = recruitIntelligenceAsset(s, "solaris", "dravos", "solaris-echo", "asset-dravos-001").state;
   return s;
 }
 
@@ -82,9 +82,9 @@ function setupFullAwarenessSequence(state: GameState): GameState {
   let s = state;
   s = setupSolarisPresenceInDravos(s);
   s = resetAP(s);
-  s = runCounterintelligenceSweep(s, "dravos", "solaris");
+  s = runCounterintelligenceSweep(s, "dravos", "solaris").state;
   s = resetAP(s);
-  s = runCounterintelligenceSweep(s, "dravos", "solaris");
+  s = runCounterintelligenceSweep(s, "dravos", "solaris").state;
   return s;
 }
 
@@ -199,25 +199,25 @@ describe("AWARENESS MODEL", () => {
 describe("SWEEP", () => {
   it("foreign network presence advances awareness", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    const next = runCounterintelligenceSweep(state, "dravos", "solaris");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    const next = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const entry = getCounterintelligenceAwareness(next, "dravos", "solaris");
     expect(entry.level).toBe("suspected");
   });
 
   it("foreign asset presence counts as presence", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = recruitIntelligenceAsset(state, "solaris", "dravos", "solaris-echo", "asset-001");
-    const next = runCounterintelligenceSweep(state, "dravos", "solaris");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = recruitIntelligenceAsset(state, "solaris", "dravos", "solaris-echo", "asset-001").state;
+    const next = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const entry = getCounterintelligenceAwareness(next, "dravos", "solaris");
     expect(entry.level).toBe("suspected");
   });
 
   it("no presence leaves awareness unchanged", () => {
     const state = validState();
-    const next = runCounterintelligenceSweep(state, "dravos", "solaris");
+    const next = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const entry = getCounterintelligenceAwareness(next, "dravos", "solaris");
     expect(entry.level).toBe("unaware");
   });
@@ -225,7 +225,7 @@ describe("SWEEP", () => {
   it("valid no-presence sweep still costs 2 AP", () => {
     const state = validState();
     const before = getNationActionPoints(state, "dravos");
-    const next = runCounterintelligenceSweep(state, "dravos", "solaris");
+    const next = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const after = getNationActionPoints(next, "dravos");
     expect(before.remaining - after.remaining).toBe(COUNTERINTELLIGENCE_SWEEP_AP_COST);
   });
@@ -234,7 +234,7 @@ describe("SWEEP", () => {
     let state = validState();
     state = setupFullAwarenessSequence(state);
     state = resetAP(state);
-    const next = runCounterintelligenceSweep(state, "dravos", "solaris");
+    const next = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const entry = getCounterintelligenceAwareness(next, "dravos", "solaris");
     expect(entry.level).toBe("identified");
   });
@@ -242,7 +242,7 @@ describe("SWEEP", () => {
   it("exact 2 AP cost", () => {
     const state = validState();
     const before = getNationActionPoints(state, "dravos");
-    const next = runCounterintelligenceSweep(state, "dravos", "solaris");
+    const next = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const after = getNationActionPoints(next, "dravos");
     expect(before.remaining - after.remaining).toBe(2);
   });
@@ -278,7 +278,7 @@ describe("SWEEP", () => {
 
   it("input state not mutated", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     const before = getNationActionPoints(state, "dravos");
     runCounterintelligenceSweep(state, "dravos", "solaris");
     const after = getNationActionPoints(state, "dravos");
@@ -296,7 +296,7 @@ describe("DOUBLE AGENT", () => {
     let state = validState();
     state = setupFullAwarenessSequence(state);
     state = resetAP(state);
-    const next = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    const next = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     const control = getDoubleAgentControl(next, "asset-dravos-001");
     expect(control.assetId).toBe("asset-dravos-001");
     expect(control.controllerNationId).toBe("dravos");
@@ -354,7 +354,7 @@ describe("DOUBLE AGENT", () => {
     let state = validState();
     state = setupFullAwarenessSequence(state);
     state = resetAP(state);
-    const next = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    const next = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     const asset = next.intelligence.assets.find((a) => a.id === "asset-dravos-001");
     expect(asset?.ownerNationId).toBe("solaris");
     expect(asset?.targetNationId).toBe("dravos");
@@ -366,17 +366,17 @@ describe("DOUBLE AGENT", () => {
     state = setupFullAwarenessSequence(state);
     state = resetAP(state);
     const before = getNationActionPoints(state, "dravos");
-    const next = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    const next = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     const after = getNationActionPoints(next, "dravos");
     expect(before.remaining - after.remaining).toBe(TURN_ASSET_AP_COST);
   });
 
   it("awareness below identified fails with no AP spent", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = recruitIntelligenceAsset(state, "solaris", "dravos", "solaris-echo", "asset-dravos-001");
-    state = runCounterintelligenceSweep(state, "dravos", "solaris");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = recruitIntelligenceAsset(state, "solaris", "dravos", "solaris-echo", "asset-dravos-001").state;
+    state = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     const before = getNationActionPoints(state, "dravos");
     expect(() =>
       turnIntelligenceAsset(state, "dravos", "asset-dravos-001"),
@@ -398,7 +398,7 @@ describe("DOUBLE AGENT", () => {
     let state = validState();
     state = setupFullAwarenessSequence(state);
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     state = resetAP(state);
     expect(() =>
       turnIntelligenceAsset(state, "dravos", "asset-dravos-001"),
@@ -409,7 +409,7 @@ describe("DOUBLE AGENT", () => {
     let state = validState();
     state = setupFullAwarenessSequence(state);
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     const { state: next } = resolveTurn(state, [passOrder("o1")]);
     const control = getDoubleAgentControl(next, "asset-dravos-001");
     expect(control.controllerNationId).toBe("dravos");
@@ -433,7 +433,7 @@ describe("FALSE INTELLIGENCE", () => {
     state = setupFullAwarenessSequence(state);
     state = setNationVisibility(state, "solaris", "dravos", "limited");
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     state = resetAP(state);
     return state;
   }
@@ -443,21 +443,21 @@ describe("FALSE INTELLIGENCE", () => {
     state = setupFullAwarenessSequence(state);
     state = setNationVisibility(state, "solaris", "dravos", "known");
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     state = resetAP(state);
     return state;
   }
 
   it("known -> limited", () => {
     const state = setupWithKnownVisibility();
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const vis = getNationVisibility(next, "solaris", "dravos");
     expect(vis).toBe("limited");
   });
 
   it("limited -> unknown", () => {
     const state = setupWithLimitedVisibility();
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const vis = getNationVisibility(next, "solaris", "dravos");
     expect(vis).toBe("unknown");
   });
@@ -467,7 +467,7 @@ describe("FALSE INTELLIGENCE", () => {
     state = setupFullAwarenessSequence(state);
     state = setNationVisibility(state, "solaris", "dravos", "unknown");
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     state = resetAP(state);
     expect(() =>
       feedFalseIntelligence(state, "dravos", "asset-dravos-001"),
@@ -477,7 +477,7 @@ describe("FALSE INTELLIGENCE", () => {
   it("exact 1 AP cost", () => {
     const state = setupWithKnownVisibility();
     const before = getNationActionPoints(state, "dravos");
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const after = getNationActionPoints(next, "dravos");
     expect(before.remaining - after.remaining).toBe(FEED_FALSE_INTELLIGENCE_AP_COST);
   });
@@ -487,7 +487,7 @@ describe("FALSE INTELLIGENCE", () => {
     state = setupFullAwarenessSequence(state);
     state = setNationVisibility(state, "solaris", "dravos", "unknown");
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     state = resetAP(state);
     const before = getNationActionPoints(state, "dravos");
     expect(() =>
@@ -512,7 +512,7 @@ describe("FALSE INTELLIGENCE", () => {
     state = setupFullAwarenessSequence(state);
     state = setNationVisibility(state, "solaris", "dravos", "known");
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     state = resetAP(state);
     expect(() =>
       feedFalseIntelligence(state, "solaris", "asset-dravos-001"),
@@ -522,7 +522,7 @@ describe("FALSE INTELLIGENCE", () => {
   it("asset unchanged", () => {
     const state = setupWithKnownVisibility();
     const before = state.intelligence.assets.find((a) => a.id === "asset-dravos-001");
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const after = next.intelligence.assets.find((a) => a.id === "asset-dravos-001");
     expect(after).toEqual(before);
   });
@@ -532,7 +532,7 @@ describe("FALSE INTELLIGENCE", () => {
     const before = state.intelligence.doubleAgents.find(
       (d) => d.assetId === "asset-dravos-001",
     );
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const after = next.intelligence.doubleAgents.find(
       (d) => d.assetId === "asset-dravos-001",
     );
@@ -545,7 +545,7 @@ describe("FALSE INTELLIGENCE", () => {
       (n) =>
         n.observerNationId === "solaris" && n.targetNationId === "dravos",
     );
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const after = next.intelligence.networks.find(
       (n) =>
         n.observerNationId === "solaris" && n.targetNationId === "dravos",
@@ -556,14 +556,14 @@ describe("FALSE INTELLIGENCE", () => {
   it("awareness unchanged", () => {
     const state = setupWithKnownVisibility();
     const before = getCounterintelligenceAwareness(state, "dravos", "solaris");
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const after = getCounterintelligenceAwareness(next, "dravos", "solaris");
     expect(after.level).toBe(before.level);
   });
 
   it("resulting state validates", () => {
     const state = setupWithKnownVisibility();
-    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    const next = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     expect(() => validateGameState(next)).not.toThrow();
   });
 });
@@ -577,17 +577,17 @@ describe("INTEGRATION", () => {
     expect(state.intelligence.assets.find((a) => a.id === "asset-dravos-001")?.ownerNationId).toBe("solaris");
     expect(state.intelligence.assets.find((a) => a.id === "asset-dravos-001")?.targetNationId).toBe("dravos");
 
-    state = runCounterintelligenceSweep(state, "dravos", "solaris");
+    state = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     let awareness = getCounterintelligenceAwareness(state, "dravos", "solaris");
     expect(awareness.level).toBe("suspected");
 
     state = resetAP(state);
-    state = runCounterintelligenceSweep(state, "dravos", "solaris");
+    state = runCounterintelligenceSweep(state, "dravos", "solaris").state;
     awareness = getCounterintelligenceAwareness(state, "dravos", "solaris");
     expect(awareness.level).toBe("identified");
 
     state = resetAP(state);
-    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001");
+    state = turnIntelligenceAsset(state, "dravos", "asset-dravos-001").state;
     const control = getDoubleAgentControl(state, "asset-dravos-001");
     expect(control.assetId).toBe("asset-dravos-001");
     expect(control.controllerNationId).toBe("dravos");
@@ -601,7 +601,7 @@ describe("INTEGRATION", () => {
     state = resetAP(state);
     const beforeAP = getNationActionPoints(state, "dravos");
     expect(getNationVisibility(state, "solaris", "dravos")).toBe("limited");
-    state = feedFalseIntelligence(state, "dravos", "asset-dravos-001");
+    state = feedFalseIntelligence(state, "dravos", "asset-dravos-001").state;
     const afterVis = getNationVisibility(state, "solaris", "dravos");
     const afterAP = getNationActionPoints(state, "dravos");
 
@@ -629,7 +629,7 @@ describe("REGRESSION", () => {
 
   it("existing intelligence state persists correctly", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     const network = state.intelligence.networks.find(
       (n) =>
         n.observerNationId === "solaris" && n.targetNationId === "dravos",

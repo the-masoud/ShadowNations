@@ -109,6 +109,17 @@ may influence `src/core` simulation.
 - Counterintelligence state persists across turns.
 - No randomness.
 
+## Event System (G1.7)
+
+- Every gameplay operation returns `OperationResult<E extends GameEvent>`.
+- OperationResult contains `{ state: GameState; event: E }`.
+- `resolveTurn` emits `TurnAdvancedEvent` in its `TurnResult.events` array.
+- TurnResult has `events: readonly GameEvent[]`.
+- Events are value objects created at the time of the operation.
+- Event `turn` field records the state.turn at the time of operation (not nextTurn).
+- `GameEvent` is a discriminated union on the `type` field.
+- Operations that fail do not emit events (they throw errors).
+
 ## Structure
 
 ```
@@ -117,6 +128,7 @@ src/core/
     actionPoints.ts
     counterintelligenceAwareness.ts
     doubleAgent.ts
+    gameEvent.ts
     gameState.ts
     intelligenceAgent.ts
     intelligenceAsset.ts
@@ -124,6 +136,7 @@ src/core/
     intelligenceState.ts
     intelligenceVisibility.ts
     nation.ts
+    operationResult.ts
     region.ts
     regionOwnership.ts
     strategicMap.ts

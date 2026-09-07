@@ -1,6 +1,8 @@
 import type { GameState } from "../model/gameState.js";
 import type { NationId } from "../model/nation.js";
 import type { AssetId } from "../model/intelligenceAsset.js";
+import type { OperationResult } from "../model/operationResult.js";
+import type { IntelligenceAssetTurnedEvent } from "../model/gameEvent.js";
 import { getNationById } from "../model/worldState.js";
 import { getIntelligenceAsset } from "../model/intelligenceAsset.js";
 import { getCounterintelligenceAwareness } from "../model/counterintelligenceAwareness.js";
@@ -40,7 +42,7 @@ export function turnIntelligenceAsset(
   state: Readonly<GameState>,
   defenderNationId: NationId,
   assetId: AssetId,
-): GameState {
+): OperationResult<IntelligenceAssetTurnedEvent> {
   getNationById(state.world, defenderNationId);
 
   const asset = getIntelligenceAsset(state, assetId);
@@ -83,8 +85,20 @@ export function turnIntelligenceAsset(
     TURN_ASSET_AP_COST,
   );
 
-  return addDoubleAgentControl(spentState, {
+  const resultingState = addDoubleAgentControl(spentState, {
     assetId,
     controllerNationId: defenderNationId,
   });
+
+  return {
+    state: resultingState,
+    event: {
+      type: "intelligence-asset-turned",
+      turn: state.turn,
+      defenderNationId,
+      intruderNationId,
+      assetId,
+      actionPointCost: TURN_ASSET_AP_COST,
+    },
+  };
 }

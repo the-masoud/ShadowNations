@@ -2,6 +2,8 @@ import type { GameState } from "../model/gameState.js";
 import type { NationId } from "../model/nation.js";
 import type { AgentId } from "../model/intelligenceAgent.js";
 import type { IntelligenceVisibility } from "../model/intelligenceVisibility.js";
+import type { OperationResult } from "../model/operationResult.js";
+import type { IntelligenceGatheredEvent } from "../model/gameEvent.js";
 import { getNationById } from "../model/worldState.js";
 import { getIntelligenceAgent } from "../model/intelligenceAgent.js";
 import { getNationVisibility } from "../model/intelligenceVisibility.js";
@@ -34,7 +36,7 @@ export function gatherIntelligence(
   actorNationId: NationId,
   targetNationId: NationId,
   agentId: AgentId,
-): GameState {
+): OperationResult<IntelligenceGatheredEvent> {
   getNationById(state.world, actorNationId);
   getNationById(state.world, targetNationId);
 
@@ -47,7 +49,7 @@ export function gatherIntelligence(
     throw new AgentOwnershipError(agentId, actorNationId);
   }
 
-  const currentVisibility = getNationVisibility(
+  const previousVisibility = getNationVisibility(
     state,
     actorNationId,
     targetNationId,
@@ -62,11 +64,11 @@ export function gatherIntelligence(
 
   let newVisibility: IntelligenceVisibility;
 
-  if (currentVisibility === "known") {
+  if (previousVisibility === "known") {
     throw new IntelligenceAlreadyKnownError(actorNationId, targetNationId);
   }
 
-  if (currentVisibility === "unknown") {
+  if (previousVisibility === "unknown") {
     if (
       network.level !== "foothold" &&
       network.level !== "established" &&
@@ -96,10 +98,24 @@ export function gatherIntelligence(
     GATHER_INTELLIGENCE_AP_COST,
   );
 
-  return setNationVisibility(
+  const resultingState = setNationVisibility(
     spentState,
     actorNationId,
     targetNationId,
     newVisibility,
   );
+
+  return {
+    state: resultingState,
+    event: {
+      type: "intelligence-gathered",
+      turn: state.turn,
+      actorNationId,
+      targetNationId,
+      agentId,
+      previousVisibility,
+      newVisibility,
+      actionPointCost: GATHER_INTELLIGENCE_AP_COST,
+    },
+  };
 }

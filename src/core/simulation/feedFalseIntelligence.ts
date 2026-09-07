@@ -2,6 +2,8 @@ import type { GameState } from "../model/gameState.js";
 import type { NationId } from "../model/nation.js";
 import type { AssetId } from "../model/intelligenceAsset.js";
 import type { IntelligenceVisibility } from "../model/intelligenceVisibility.js";
+import type { OperationResult } from "../model/operationResult.js";
+import type { FalseIntelligenceFedEvent } from "../model/gameEvent.js";
 import { getNationById } from "../model/worldState.js";
 import { getIntelligenceAsset } from "../model/intelligenceAsset.js";
 import { getNationVisibility } from "../model/intelligenceVisibility.js";
@@ -35,7 +37,7 @@ export function feedFalseIntelligence(
   state: Readonly<GameState>,
   controllerNationId: NationId,
   assetId: AssetId,
-): GameState {
+): OperationResult<FalseIntelligenceFedEvent> {
   getNationById(state.world, controllerNationId);
 
   const asset = getIntelligenceAsset(state, assetId);
@@ -52,7 +54,7 @@ export function feedFalseIntelligence(
 
   const observerNationId = asset.ownerNationId;
 
-  const currentVisibility = getNationVisibility(
+  const previousVisibility = getNationVisibility(
     state,
     observerNationId,
     controllerNationId,
@@ -66,9 +68,9 @@ export function feedFalseIntelligence(
 
   let degradedVisibility: IntelligenceVisibility;
 
-  if (currentVisibility === "known") {
+  if (previousVisibility === "known") {
     degradedVisibility = "limited";
-  } else if (currentVisibility === "limited") {
+  } else if (previousVisibility === "limited") {
     degradedVisibility = "unknown";
   } else {
     throw new NoIntelligenceToDegradeError(
@@ -83,10 +85,24 @@ export function feedFalseIntelligence(
     FEED_FALSE_INTELLIGENCE_AP_COST,
   );
 
-  return setNationVisibility(
+  const resultingState = setNationVisibility(
     spentState,
     observerNationId,
     controllerNationId,
     degradedVisibility,
   );
+
+  return {
+    state: resultingState,
+    event: {
+      type: "false-intelligence-fed",
+      turn: state.turn,
+      controllerNationId,
+      observerNationId,
+      assetId,
+      previousVisibility,
+      newVisibility: degradedVisibility,
+      actionPointCost: FEED_FALSE_INTELLIGENCE_AP_COST,
+    },
+  };
 }

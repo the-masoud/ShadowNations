@@ -2,6 +2,8 @@ import type { GameState } from "../model/gameState.js";
 import type { NationId } from "../model/nation.js";
 import type { AgentId } from "../model/intelligenceAgent.js";
 import type { AssetId, IntelligenceAssetAccess } from "../model/intelligenceAsset.js";
+import type { OperationResult } from "../model/operationResult.js";
+import type { IntelligenceAssetRecruitedEvent } from "../model/gameEvent.js";
 import { getNationById } from "../model/worldState.js";
 import { getIntelligenceAgent } from "../model/intelligenceAgent.js";
 import { getIntelligenceNetwork } from "../model/intelligenceState.js";
@@ -39,7 +41,7 @@ export function recruitIntelligenceAsset(
   targetNationId: NationId,
   agentId: AgentId,
   assetId: AssetId,
-): GameState {
+): OperationResult<IntelligenceAssetRecruitedEvent> {
   getNationById(state.world, actorNationId);
   getNationById(state.world, targetNationId);
 
@@ -95,5 +97,19 @@ export function recruitIntelligenceAsset(
     RECRUIT_ASSET_AP_COST,
   );
 
-  return addIntelligenceAsset(spentState, asset);
+  const resultingState = addIntelligenceAsset(spentState, asset);
+
+  return {
+    state: resultingState,
+    event: {
+      type: "intelligence-asset-recruited",
+      turn: state.turn,
+      actorNationId,
+      targetNationId,
+      agentId,
+      assetId,
+      access,
+      actionPointCost: RECRUIT_ASSET_AP_COST,
+    },
+  };
 }

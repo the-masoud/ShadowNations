@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G1.5 — Espionage Operations
+**Current milestone:** G1.8 — G1 Acceptance
 
-**Next milestone:** G1.6 — Counterintelligence
+**Next milestone:** G2.1 — Nation Strategic Stats

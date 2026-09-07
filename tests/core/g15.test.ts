@@ -42,7 +42,7 @@ function passOrder(id: string, nationId = "solaris"): TurnOrder {
 describe("BUILD NETWORK", () => {
   it("none -> foothold", () => {
     const state = validState();
-    const next = buildIntelligenceNetwork(
+    const { state: next } = buildIntelligenceNetwork(
       state,
       "solaris",
       "dravos",
@@ -54,8 +54,8 @@ describe("BUILD NETWORK", () => {
 
   it("foothold -> established", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    const next = buildIntelligenceNetwork(
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    const { state: next } = buildIntelligenceNetwork(
       state,
       "solaris",
       "dravos",
@@ -67,9 +67,9 @@ describe("BUILD NETWORK", () => {
 
   it("established -> deep", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    const next = buildIntelligenceNetwork(
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    const { state: next } = buildIntelligenceNetwork(
       state,
       "solaris",
       "dravos",
@@ -81,9 +81,9 @@ describe("BUILD NETWORK", () => {
 
   it("deep fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     expect(() =>
       buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo"),
     ).toThrow(MaximumIntelligenceNetworkLevelError);
@@ -92,7 +92,7 @@ describe("BUILD NETWORK", () => {
   it("exact 2 AP cost", () => {
     const state = validState();
     const before = getNationActionPoints(state, "solaris");
-    const next = buildIntelligenceNetwork(
+    const { state: next } = buildIntelligenceNetwork(
       state,
       "solaris",
       "dravos",
@@ -122,8 +122,8 @@ describe("GATHER INTELLIGENCE", () => {
 
   it("unknown + foothold -> limited", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    const next = gatherIntelligence(
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    const { state: next } = gatherIntelligence(
       state,
       "solaris",
       "dravos",
@@ -134,8 +134,8 @@ describe("GATHER INTELLIGENCE", () => {
 
   it("limited + foothold fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo").state;
     expect(() =>
       gatherIntelligence(state, "solaris", "dravos", "solaris-echo"),
     ).toThrow(InsufficientIntelligenceNetworkError);
@@ -143,10 +143,10 @@ describe("GATHER INTELLIGENCE", () => {
 
   it("limited + established -> known", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    const next = gatherIntelligence(
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    const { state: next } = gatherIntelligence(
       state,
       "solaris",
       "dravos",
@@ -157,10 +157,10 @@ describe("GATHER INTELLIGENCE", () => {
 
   it("known fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo").state;
     expect(() =>
       gatherIntelligence(state, "solaris", "dravos", "solaris-echo"),
     ).toThrow(IntelligenceAlreadyKnownError);
@@ -168,9 +168,9 @@ describe("GATHER INTELLIGENCE", () => {
 
   it("exact 1 AP cost", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     const before = getNationActionPoints(state, "solaris");
-    const next = gatherIntelligence(
+    const { state: next } = gatherIntelligence(
       state,
       "solaris",
       "dravos",
@@ -205,7 +205,7 @@ describe("RECRUIT ASSET", () => {
 
   it("foothold network fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     expect(() =>
       recruitIntelligenceAsset(
         state,
@@ -219,9 +219,9 @@ describe("RECRUIT ASSET", () => {
 
   it("established creates limited-access asset", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    const next = recruitIntelligenceAsset(
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    const { state: next } = recruitIntelligenceAsset(
       state,
       "solaris",
       "dravos",
@@ -237,11 +237,11 @@ describe("RECRUIT ASSET", () => {
 
   it("deep creates high-access asset", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     state = { ...state, planning: resetActionPointsForNewTurn(state.planning) };
-    const next = recruitIntelligenceAsset(
+    const { state: next } = recruitIntelligenceAsset(
       state,
       "solaris",
       "dravos",
@@ -254,10 +254,10 @@ describe("RECRUIT ASSET", () => {
 
   it("exact 2 AP cost", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     const before = getNationActionPoints(state, "solaris");
-    const next = recruitIntelligenceAsset(
+    const { state: next } = recruitIntelligenceAsset(
       state,
       "solaris",
       "dravos",
@@ -270,8 +270,8 @@ describe("RECRUIT ASSET", () => {
 
   it("empty asset ID fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     expect(() =>
       recruitIntelligenceAsset(
         state,
@@ -285,15 +285,15 @@ describe("RECRUIT ASSET", () => {
 
   it("duplicate asset ID fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     state = recruitIntelligenceAsset(
       state,
       "solaris",
       "dravos",
       "solaris-echo",
       "asset-001",
-    );
+    ).state;
     expect(() =>
       recruitIntelligenceAsset(
         state,
@@ -358,8 +358,8 @@ describe("COMMON", () => {
 
   it("insufficient AP fails", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "norvia", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "norvia", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "norvia", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "norvia", "solaris-echo").state;
     state = spendActionPoints(state, "solaris", 2);
     expect(() =>
       buildIntelligenceNetwork(state, "solaris", "norvia", "solaris-orbit"),
@@ -382,7 +382,7 @@ describe("COMMON", () => {
 
   it("successful result validates", () => {
     const state = validState();
-    const next = buildIntelligenceNetwork(
+    const { state: next } = buildIntelligenceNetwork(
       state,
       "solaris",
       "dravos",
@@ -401,15 +401,15 @@ describe("VERTICAL SLICE", () => {
       "solaris",
       "dravos",
       "solaris-echo",
-    );
+    ).state;
     expect(getIntelligenceNetwork(s1, "solaris", "dravos").level).toBe("foothold");
     expect(getNationActionPoints(s1, "solaris").remaining).toBe(4);
 
-    const s2 = gatherIntelligence(s1, "solaris", "dravos", "solaris-echo");
+    const s2 = gatherIntelligence(s1, "solaris", "dravos", "solaris-echo").state;
     expect(getNationVisibility(s2, "solaris", "dravos")).toBe("limited");
     expect(getNationActionPoints(s2, "solaris").remaining).toBe(3);
 
-    const s3 = buildIntelligenceNetwork(s2, "solaris", "dravos", "solaris-echo");
+    const s3 = buildIntelligenceNetwork(s2, "solaris", "dravos", "solaris-echo").state;
     expect(getIntelligenceNetwork(s3, "solaris", "dravos").level).toBe("established");
     expect(getNationActionPoints(s3, "solaris").remaining).toBe(1);
 
@@ -430,7 +430,7 @@ describe("VERTICAL SLICE", () => {
       "dravos",
       "solaris-echo",
       "asset-dravos-001",
-    );
+    ).state;
     expect(getNationActionPoints(s6, "solaris").remaining).toBe(4);
     const asset = s6.intelligence.assets.find(
       (a) => a.id === "asset-dravos-001",
@@ -445,22 +445,22 @@ describe("VERTICAL SLICE", () => {
 describe("TURN", () => {
   it("after resolveTurn: AP replenishes", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     const { state: next } = resolveTurn(state, [passOrder("o1")]);
     expect(getNationActionPoints(next, "solaris").remaining).toBe(6);
   });
 
   it("visibility persists", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = gatherIntelligence(state, "solaris", "dravos", "solaris-echo").state;
     const { state: next } = resolveTurn(state, [passOrder("o1")]);
     expect(getNationVisibility(next, "solaris", "dravos")).toBe("limited");
   });
 
   it("networks persist", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     const { state: next } = resolveTurn(state, [passOrder("o1")]);
     expect(getIntelligenceNetwork(next, "solaris", "dravos").level).toBe("foothold");
   });
@@ -473,15 +473,15 @@ describe("TURN", () => {
 
   it("assets persist", () => {
     let state = validState();
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
-    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo");
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
+    state = buildIntelligenceNetwork(state, "solaris", "dravos", "solaris-echo").state;
     state = recruitIntelligenceAsset(
       state,
       "solaris",
       "dravos",
       "solaris-echo",
       "asset-001",
-    );
+    ).state;
     const { state: next } = resolveTurn(state, [passOrder("o1")]);
     expect(next.intelligence.assets).toHaveLength(1);
     expect(next.intelligence.assets[0].id).toBe("asset-001");

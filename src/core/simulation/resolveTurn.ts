@@ -48,9 +48,10 @@ export function resolveTurn(
   validateNoDuplicates(orders);
 
   const processedOrderIds = sortedIds(orders);
+  const nextTurn = state.turn + 1;
 
   const nextState: GameState = {
-    turn: state.turn + 1,
+    turn: nextTurn,
     phase: "planning",
     playerNationId: state.playerNationId,
     world: state.world,
@@ -60,8 +61,17 @@ export function resolveTurn(
 
   const result: TurnResult = {
     previousTurn: state.turn,
-    nextTurn: state.turn + 1,
+    nextTurn,
     processedOrderIds,
+    events: [
+      {
+        type: "turn-advanced",
+        turn: nextTurn,
+        previousTurn: state.turn,
+        nextTurn,
+        processedOrderIds,
+      },
+    ],
   };
 
   return { state: nextState, result };

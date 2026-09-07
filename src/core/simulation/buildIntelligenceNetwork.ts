@@ -1,6 +1,8 @@
 import type { GameState } from "../model/gameState.js";
 import type { NationId } from "../model/nation.js";
 import type { AgentId } from "../model/intelligenceAgent.js";
+import type { OperationResult } from "../model/operationResult.js";
+import type { IntelligenceNetworkBuiltEvent } from "../model/gameEvent.js";
 import { getNationById } from "../model/worldState.js";
 import { getIntelligenceAgent } from "../model/intelligenceAgent.js";
 import { getIntelligenceNetwork } from "../model/intelligenceState.js";
@@ -32,7 +34,7 @@ export function buildIntelligenceNetwork(
   actorNationId: NationId,
   targetNationId: NationId,
   agentId: AgentId,
-): GameState {
+): OperationResult<IntelligenceNetworkBuiltEvent> {
   getNationById(state.world, actorNationId);
   getNationById(state.world, targetNationId);
 
@@ -53,6 +55,7 @@ export function buildIntelligenceNetwork(
     throw new InvalidPhaseError("planning", state.phase);
   }
 
+  const previousLevel = network.level;
   const nextLevel = getNextIntelligenceNetworkLevel(network.level);
   if (nextLevel === network.level) {
     throw new MaximumIntelligenceNetworkLevelError(
@@ -63,10 +66,24 @@ export function buildIntelligenceNetwork(
 
   const spentState = spendActionPoints(state, actorNationId, BUILD_NETWORK_AP_COST);
 
-  return setIntelligenceNetworkLevel(
+  const resultingState = setIntelligenceNetworkLevel(
     spentState,
     actorNationId,
     targetNationId,
     nextLevel,
   );
+
+  return {
+    state: resultingState,
+    event: {
+      type: "intelligence-network-built",
+      turn: state.turn,
+      actorNationId,
+      targetNationId,
+      agentId,
+      previousLevel,
+      newLevel: nextLevel,
+      actionPointCost: BUILD_NETWORK_AP_COST,
+    },
+  };
 }

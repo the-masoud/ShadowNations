@@ -1,5 +1,7 @@
 import type { GameState } from "../model/gameState.js";
 import type { NationId } from "../model/nation.js";
+import type { OperationResult } from "../model/operationResult.js";
+import type { CounterintelligenceSweepEvent } from "../model/gameEvent.js";
 import { getNationById } from "../model/worldState.js";
 import { getCounterintelligenceAwareness, getNextCounterintelligenceAwarenessLevel } from "../model/counterintelligenceAwareness.js";
 import { getIntelligenceNetwork } from "../model/intelligenceState.js";
@@ -23,7 +25,7 @@ export function runCounterintelligenceSweep(
   state: Readonly<GameState>,
   defenderNationId: NationId,
   intruderNationId: NationId,
-): GameState {
+): OperationResult<CounterintelligenceSweepEvent> {
   getNationById(state.world, defenderNationId);
   getNationById(state.world, intruderNationId);
 
@@ -71,15 +73,44 @@ export function runCounterintelligenceSweep(
     }
   }
 
+  const previousAwareness = awareness.level;
+  let newAwareness = previousAwareness;
+
   if (foreignPresence) {
-    const nextLevel = getNextCounterintelligenceAwarenessLevel(awareness.level);
-    return setCounterintelligenceAwareness(
+    newAwareness = getNextCounterintelligenceAwarenessLevel(awareness.level);
+    const resultingState = setCounterintelligenceAwareness(
       spentState,
       defenderNationId,
       intruderNationId,
-      nextLevel,
+      newAwareness,
     );
+
+    return {
+      state: resultingState,
+      event: {
+        type: "counterintelligence-sweep",
+        turn: state.turn,
+        defenderNationId,
+        intruderNationId,
+        foreignPresenceDetected: true,
+        previousAwareness,
+        newAwareness,
+        actionPointCost: COUNTERINTELLIGENCE_SWEEP_AP_COST,
+      },
+    };
   }
 
-  return spentState;
+  return {
+    state: spentState,
+    event: {
+      type: "counterintelligence-sweep",
+      turn: state.turn,
+      defenderNationId,
+      intruderNationId,
+      foreignPresenceDetected: false,
+      previousAwareness,
+      newAwareness,
+      actionPointCost: COUNTERINTELLIGENCE_SWEEP_AP_COST,
+    },
+  };
 }
