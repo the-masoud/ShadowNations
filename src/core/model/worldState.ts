@@ -5,6 +5,9 @@ import type { StrategicMap } from "./strategicMap.js";
 import { createInitialNationStrategicStats, validateNationStrategicStats, type NationStrategicStats } from "./nationStrategicStats.js";
 import { createInitialNationInfluence, validateNationInfluence, type NationInfluence } from "./nationInfluence.js";
 import { createInitialDiplomaticRelationships, validateDiplomaticRelationships, type DiplomaticRelationship } from "./diplomaticRelationship.js";
+import type { ProxyConflict } from "./proxyConflict.js";
+import { validateProxyConflicts } from "../simulation/validateProxyConflicts.js";
+import { createInitialNationRegimePressure, validateNationRegimePressure, type NationRegimePressure } from "./nationRegimePressure.js";
 
 export class UnknownNationError extends Error {
   constructor(nationId: NationId) {
@@ -27,6 +30,8 @@ export interface WorldState {
   readonly nationStrategicStats: readonly NationStrategicStats[];
   readonly nationInfluence: readonly NationInfluence[];
   readonly diplomaticRelationships: readonly DiplomaticRelationship[];
+  readonly proxyConflicts: readonly ProxyConflict[];
+  readonly nationRegimePressure: readonly NationRegimePressure[];
 }
 
 export function createInitialWorldState(): WorldState {
@@ -64,6 +69,8 @@ export function createInitialWorldState(): WorldState {
     nationStrategicStats: createInitialNationStrategicStats(nations),
     nationInfluence: createInitialNationInfluence(nations),
     diplomaticRelationships: createInitialDiplomaticRelationships(nations),
+    proxyConflicts: [],
+    nationRegimePressure: createInitialNationRegimePressure(nations),
   };
 }
 
@@ -107,4 +114,6 @@ export function validateWorldState(world: Readonly<WorldState>): void {
   validateNationStrategicStats(world);
   validateNationInfluence(world);
   validateDiplomaticRelationships(world);
+  validateProxyConflicts(world);
+  validateNationRegimePressure(world);
 }

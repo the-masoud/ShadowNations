@@ -169,7 +169,49 @@ may influence `src/core` simulation.
 - Stabilization increases target stability.
 - Operations return deterministic domain events.
 - No hidden coupling exists.
-- Sabotage/regime pressure/proxy conflict are later milestones.
+
+## Covert Sabotage (G2.5)
+
+- Covert sabotage is one gameplay operation.
+- Exactly two objectives: `"internal-security"` and `"public-support"`.
+- Owned intelligence agent required.
+- Established or deep target network required.
+- AP cost: 2.
+- Selected stat damage: 10 (floored at 0).
+- Stability is NOT affected.
+- No random detection.
+- No automatic counterintelligence awareness change.
+- No influence/diplomacy coupling.
+- No proxy conflict/regime pressure behavior.
+
+## Proxy Conflicts (G2.6)
+
+- `proxyConflicts` lives in WorldState.
+- Initial collection is empty.
+- Conflict has host plus two external sponsors.
+- Sponsors stored in canonical `world.nations` order.
+- Intensity levels: `low`, `medium`, `high`.
+- `startProxyConflict`: creates a new proxy conflict in a host nation.
+- `escalateProxyConflict`: increases intensity by one step.
+- Start eligibility: influence >= 40, hostile diplomacy, host stability <= 70.
+- Escalation does NOT re-check start eligibility.
+- Deterministic host stability impact: 5 per operation (floored at 0).
+- No combat simulation, no winner model, no automatic resolution.
+- Persistence across turns.
+
+## Regime Pressure (G2.7)
+
+- `NationRegimePressure` is directional objective WorldState data.
+- 30 non-self directional entries (6×5), initial value 0.
+- Integer range 0..100, independent per direction.
+- `setNationRegimePressure` is a low-level structural primitive.
+- `applyRegimePressure` costs 3 AP, requires influence >= 40.
+- Friendly diplomacy blocks regime pressure.
+- Pressure increases by 20, capped at 100.
+- Target stability decreases by 5, floored at 0.
+- Pressure persists across turns with no automatic decay.
+- Pressure 100 causes no automatic coup/regime change.
+- No automatic proxy escalation or sabotage triggered by pressure.
 
 ## Structure
 
@@ -178,6 +220,7 @@ src/core/
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
+    covertSabotage.ts
     diplomaticRelationship.ts
     doubleAgent.ts
     gameEvent.ts
@@ -189,8 +232,10 @@ src/core/
     intelligenceVisibility.ts
     nation.ts
     nationInfluence.ts
+    nationRegimePressure.ts
     nationStrategicStats.ts
     operationResult.ts
+    proxyConflict.ts
     region.ts
     regionOwnership.ts
     strategicMap.ts
@@ -200,14 +245,21 @@ src/core/
   simulation/     pure functions
     addDoubleAgentControl.ts
     addIntelligenceAsset.ts
+    addProxyConflict.ts
+    applyRegimePressure.ts
     buildIntelligenceNetwork.ts
+    conductCovertSabotage.ts
     conductDiplomaticOutreach.ts
+    covertSabotageErrors.ts
     cultivatePoliticalInfluence.ts
+    escalateProxyConflict.ts
     feedFalseIntelligence.ts
     gatherIntelligence.ts
     intelligenceErrors.ts
     politicalOperationErrors.ts
+    proxyConflictErrors.ts
     recruitIntelligenceAsset.ts
+    regimePressureErrors.ts
     resetActionPointsForNewTurn.ts
     resolveTurn.ts
     runCounterintelligenceSweep.ts
@@ -215,13 +267,17 @@ src/core/
     setDiplomaticStatus.ts
     setIntelligenceNetworkLevel.ts
     setNationInfluence.ts
+    setNationRegimePressure.ts
     setNationStrategicStat.ts
     setNationVisibility.ts
+    setProxyConflictIntensity.ts
     setRegionOwner.ts
     spendActionPoints.ts
     stabilizeGovernment.ts
+    startProxyConflict.ts
     turnIntelligenceAsset.ts
     validateGameState.ts
     validateIntelligenceState.ts
     validatePlanningState.ts
+    validateProxyConflicts.ts
 ```

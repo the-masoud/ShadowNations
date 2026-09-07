@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G2.4 — Political Operations
+**Current milestone:** G2.8 — G2 Acceptance
 
-**Next milestone:** G2.5 — Covert Sabotage
+**Next milestone:** G3.1 — AI Perception

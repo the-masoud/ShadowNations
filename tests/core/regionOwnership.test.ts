@@ -45,6 +45,8 @@ function minimalWorld(overrides?: Partial<WorldState>): WorldState {
     nationStrategicStats: [{ nationId: "a", stability: 50, publicSupport: 50, internalSecurity: 50 }],
     nationInfluence: [],
     diplomaticRelationships: [],
+    proxyConflicts: [],
+    nationRegimePressure: [],
     ...overrides,
   };
 }

@@ -5,6 +5,8 @@ import type { IntelligenceNetworkLevel } from "./intelligenceNetwork.js";
 import type { IntelligenceVisibility } from "./intelligenceVisibility.js";
 import type { CounterintelligenceAwarenessLevel } from "./counterintelligenceAwareness.js";
 import type { DiplomaticStatus } from "./diplomaticRelationship.js";
+import type { CovertSabotageObjective } from "./covertSabotage.js";
+import type { ProxyConflictId, ProxyConflictIntensity } from "./proxyConflict.js";
 
 export interface IntelligenceNetworkBuiltEvent {
   readonly type: "intelligence-network-built";
@@ -108,6 +110,56 @@ export interface GovernmentStabilizedEvent {
   readonly actionPointCost: number;
 }
 
+export interface CovertSabotageConductedEvent {
+  readonly type: "covert-sabotage-conducted";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly agentId: AgentId;
+  readonly objective: CovertSabotageObjective;
+  readonly previousValue: number;
+  readonly newValue: number;
+  readonly actionPointCost: number;
+}
+
+export interface ProxyConflictStartedEvent {
+  readonly type: "proxy-conflict-started";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly rivalNationId: NationId;
+  readonly hostNationId: NationId;
+  readonly conflictId: ProxyConflictId;
+  readonly intensity: "low";
+  readonly previousHostStability: number;
+  readonly newHostStability: number;
+  readonly actionPointCost: number;
+}
+
+export interface ProxyConflictEscalatedEvent {
+  readonly type: "proxy-conflict-escalated";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly conflictId: ProxyConflictId;
+  readonly hostNationId: NationId;
+  readonly previousIntensity: ProxyConflictIntensity;
+  readonly newIntensity: ProxyConflictIntensity;
+  readonly previousHostStability: number;
+  readonly newHostStability: number;
+  readonly actionPointCost: number;
+}
+
+export interface RegimePressureAppliedEvent {
+  readonly type: "regime-pressure-applied";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly previousPressure: number;
+  readonly newPressure: number;
+  readonly previousStability: number;
+  readonly newStability: number;
+  readonly actionPointCost: number;
+}
+
 export type GameEvent =
   | IntelligenceNetworkBuiltEvent
   | IntelligenceGatheredEvent
@@ -118,4 +170,8 @@ export type GameEvent =
   | TurnAdvancedEvent
   | PoliticalInfluenceCultivatedEvent
   | DiplomaticOutreachConductedEvent
-  | GovernmentStabilizedEvent;
+  | GovernmentStabilizedEvent
+  | CovertSabotageConductedEvent
+  | ProxyConflictStartedEvent
+  | ProxyConflictEscalatedEvent
+  | RegimePressureAppliedEvent;
