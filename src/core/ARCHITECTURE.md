@@ -239,13 +239,29 @@ may influence `src/core` simulation.
 - No planning, scoring, or action selection exists in G3.2.
 - G3.3 is the next planning milestone.
 
+## AI Planning (G3.3)
+
+- G3.3 combines AiPerception + AiPersonality.
+- Planning is derived and non-persistent.
+- Plan contains observer, turn, domain, target.
+- Domains are exactly diplomacy/intelligence.
+- Personality chooses domain deterministically.
+- Perception chooses target deterministically.
+- Diplomacy scoring uses status + observer influence.
+- Intelligence scoring uses visibility + network + defensive awareness.
+- Canonical order breaks target ties.
+- No gameplay operation is selected.
+- No AP is spent.
+- G3.4 and G3.5 select concrete diplomacy/espionage behavior later.
+
 ## Structure
 
 ```
 src/core/
-  ai/             derived AI perception and personalities
+  ai/             derived AI perception, personalities, and planning
     aiPerception.ts
     aiPersonality.ts
+    aiPlanning.ts
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
