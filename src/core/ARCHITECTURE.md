@@ -132,6 +132,19 @@ may influence `src/core` simulation.
 - No automatic drift exists in G2.1.
 - Future G2 systems authorize political/stat changes.
 
+## Nation Influence (G2.2)
+
+- Influence is objective directional political leverage.
+- Stored in WorldState as `nationInfluence`.
+- Values are integer 0..100.
+- Self influence does not exist (30 entries for 6 nations).
+- A -> B is independent of B -> A (no symmetry enforced).
+- Influence does not imply friendship/hostility.
+- setNationInfluence is a low-level structural primitive.
+- Influence does not automatically change between turns.
+- G2.3 will introduce diplomacy separately.
+- Later gameplay systems authorize influence changes.
+
 ## Structure
 
 ```
@@ -148,6 +161,7 @@ src/core/
     intelligenceState.ts
     intelligenceVisibility.ts
     nation.ts
+    nationInfluence.ts
     nationStrategicStats.ts
     operationResult.ts
     region.ts
@@ -169,6 +183,7 @@ src/core/
     runCounterintelligenceSweep.ts
     setCounterintelligenceAwareness.ts
     setIntelligenceNetworkLevel.ts
+    setNationInfluence.ts
     setNationStrategicStat.ts
     setNationVisibility.ts
     setRegionOwner.ts

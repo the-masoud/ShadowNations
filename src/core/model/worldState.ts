@@ -3,6 +3,7 @@ import type { RegionOwnership } from "./regionOwnership.js";
 import { createInitialStrategicMap } from "./strategicMap.js";
 import type { StrategicMap } from "./strategicMap.js";
 import { createInitialNationStrategicStats, validateNationStrategicStats, type NationStrategicStats } from "./nationStrategicStats.js";
+import { createInitialNationInfluence, validateNationInfluence, type NationInfluence } from "./nationInfluence.js";
 
 export class UnknownNationError extends Error {
   constructor(nationId: NationId) {
@@ -23,6 +24,7 @@ export interface WorldState {
   readonly map: StrategicMap;
   readonly regionOwnership: readonly RegionOwnership[];
   readonly nationStrategicStats: readonly NationStrategicStats[];
+  readonly nationInfluence: readonly NationInfluence[];
 }
 
 export function createInitialWorldState(): WorldState {
@@ -58,6 +60,7 @@ export function createInitialWorldState(): WorldState {
       { regionId: "eastern-reach", ownerNationId: "arkania" },
     ],
     nationStrategicStats: createInitialNationStrategicStats(nations),
+    nationInfluence: createInitialNationInfluence(nations),
   };
 }
 
@@ -99,4 +102,5 @@ export function validateWorldState(world: Readonly<WorldState>): void {
   }
 
   validateNationStrategicStats(world);
+  validateNationInfluence(world);
 }

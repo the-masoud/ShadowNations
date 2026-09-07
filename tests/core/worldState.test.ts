@@ -106,6 +106,7 @@ describe("validateWorldState", () => {
       map: createInitialStrategicMap(),
       regionOwnership: [],
       nationStrategicStats: [],
+      nationInfluence: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -122,6 +123,7 @@ describe("validateWorldState", () => {
       map: createInitialStrategicMap(),
       regionOwnership: [],
       nationStrategicStats: [],
+      nationInfluence: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -135,6 +137,7 @@ describe("validateWorldState", () => {
       map: createInitialStrategicMap(),
       regionOwnership: [],
       nationStrategicStats: [],
+      nationInfluence: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow("Empty nation ID");
@@ -146,6 +149,7 @@ describe("validateWorldState", () => {
       map: createInitialStrategicMap(),
       regionOwnership: [],
       nationStrategicStats: [],
+      nationInfluence: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -159,6 +163,7 @@ describe("validateWorldState", () => {
       map: createInitialStrategicMap(),
       regionOwnership: [],
       nationStrategicStats: [],
+      nationInfluence: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
