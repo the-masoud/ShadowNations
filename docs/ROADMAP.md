@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G3.5 — AI Espionage
+**Current milestone:** G3.6 — Simulation Harness
 
-**Next milestone:** G3.6 — Simulation Harness
+**Next milestone:** G3.7 — G3 Acceptance

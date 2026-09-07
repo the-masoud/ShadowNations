@@ -283,16 +283,29 @@ may influence `src/core` simulation.
 - Deterministic and non-persistent; no GameState or IntelligenceState mutation.
 - G3.6 Simulation Harness is the next milestone.
 
+## AI Simulation Harness (G3.6)
+
+- G3.6 composes the accepted G3.1-G3.5 AI pipeline into one derived snapshot for one planning-phase GameState.
+- Each call processes every `state.world.nations` entry exactly once in its existing order; `playerNationId` is intentionally included.
+- The per-nation pipeline is `createAiPerception` → `getAiPersonality` → `createAiPlan` → the accepted domain-specific decision function.
+- `plan.domain` and `plan.targetNationId` are authoritative; G3.6 does not duplicate AI scoring or policy.
+- Normalized decisions preserve domain, target, and action; diplomacy uses `sabotageObjective: null`, while intelligence preserves the G3.5 `sabotageObjective`.
+- The harness is read-only: no gameplay operation execution, no AP spending, no `TurnOrder`, no `resolveTurn`, no `GameEvent`, and no state mutation.
+- One call produces one snapshot only; there is no multi-turn simulation and no persistent AI state.
+- The harness is deterministic and non-persistent.
+- G3.7 — G3 Acceptance is next after G3.6 acceptance.
+
 ## Structure
 
 ```
 src/core/
-  ai/             derived AI perception, personalities, planning, diplomacy, and espionage
+  ai/             derived AI perception, personalities, planning, diplomacy, espionage, and simulation harness
     aiPerception.ts
     aiPersonality.ts
     aiPlanning.ts
     aiDiplomacy.ts
     aiEspionage.ts
+    aiSimulationHarness.ts
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
@@ -359,4 +372,5 @@ src/core/
   tests/core/
     g34.test.ts
     g35.test.ts
+    g36.test.ts
 ```
