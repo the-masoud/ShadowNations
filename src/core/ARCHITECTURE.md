@@ -268,15 +268,31 @@ may influence `src/core` simulation.
 - Regime pressure, proxy conflict behavior, and espionage are outside G3.4.
 - G3.5 AI Espionage is the next milestone.
 
+## AI Espionage (G3.5)
+
+- G3.5 consumes AiPerception + intelligence AiPlan.
+- Plan target is authoritative; G3.5 does not rescore or reselect targets.
+- Decision-only; no gameplay operation is executed and no AP is spent.
+- Five approved actions: build-intelligence-network, gather-intelligence, counterintelligence-sweep, conduct-covert-sabotage, pass.
+- Policy precedence: suspected defensive awareness → sweep; weak network (none/foothold) → build; insufficient visibility (unknown/limited) with established/deep → gather; known + established → build; known + deep + exact → sabotage evaluation; else → pass.
+- AP affordability is checked against accepted operation costs: BUILD_NETWORK=2, GATHER_INTELLIGENCE=1, COUNTERINTELLIGENCE_SWEEP=2, COVERT_SABOTAGE=2.
+- No cheaper fallback: unaffordable preferred action returns pass without falling through to another action.
+- Action selection insulates only: visibility, strategicStats, intelligenceNetworkLevel, defensiveAwareness, remaining AP.
+- Sabotage objective precedence: internalSecurity > 0 wins before publicSupport > 0; stability never affects objective.
+- No agent/asset/double-agent selection; no recruitAsset, turnAsset, or feedFalseIntelligence actions.
+- Deterministic and non-persistent; no GameState or IntelligenceState mutation.
+- G3.6 Simulation Harness is the next milestone.
+
 ## Structure
 
 ```
 src/core/
-  ai/             derived AI perception, personalities, planning, and diplomacy
+  ai/             derived AI perception, personalities, planning, diplomacy, and espionage
     aiPerception.ts
     aiPersonality.ts
     aiPlanning.ts
     aiDiplomacy.ts
+    aiEspionage.ts
   model/          pure data types
     actionPoints.ts
     counterintelligenceAwareness.ts
@@ -342,4 +358,5 @@ src/core/
     validateProxyConflicts.ts
   tests/core/
     g34.test.ts
+    g35.test.ts
 ```
