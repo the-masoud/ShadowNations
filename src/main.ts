@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { BootScene } from "./game/scenes/BootScene";
 import { CampaignSetupScene } from "./game/scenes/CampaignSetupScene";
 import { MainScene } from "./game/scenes/MainScene";
+import { ReplayScene } from "./game/scenes/ReplayScene";
 import { GAME_LOGICAL_WIDTH, GAME_LOGICAL_HEIGHT } from "./game/ui/responsiveViewport";
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -10,7 +11,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: GAME_LOGICAL_HEIGHT,
   parent: "game-container",
   backgroundColor: "#0a0e17",
-  scene: [BootScene, CampaignSetupScene, MainScene],
+  scene: [BootScene, CampaignSetupScene, MainScene, ReplayScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
