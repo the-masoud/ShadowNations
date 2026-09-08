@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G5.7 — Balance Pass
+**Current milestone:** G5.8 — G5 Acceptance
 
-**Next milestone:** G5.8 — G5 Acceptance
+**Next milestone:** G6.1 — Visual Polish
