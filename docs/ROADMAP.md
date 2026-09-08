@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G4.7 — Responsive Browser UI
+**Current milestone:** G4.8 — G4 Acceptance
 
-**Next milestone:** G4.8 — G4 Acceptance
+**Next milestone:** G5.1 — Victory / Defeat Conditions
