@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G4.8 — G4 Acceptance
+**Current milestone:** G5.1 — Victory / Defeat Conditions
 
-**Next milestone:** G5.1 — Victory / Defeat Conditions
+**Next milestone:** G5.2 — Campaign Setup
