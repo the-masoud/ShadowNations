@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G5.4 — Tutorial
+**Current milestone:** G5.5 — Save / Load
 
-**Next milestone:** G5.5 — Save / Load
+**Next milestone:** G5.6 — Replay / Timeline

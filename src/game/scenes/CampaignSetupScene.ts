@@ -3,6 +3,7 @@ import type { NationId } from "../../core/model/nation.js";
 import type { CampaignSetupPresentationModel } from "../ui/campaignSetupPresentation.js";
 import { createCampaignGameState } from "../../core/simulation/createCampaignGameState.js";
 import { createCampaignSetupPresentationModel } from "../ui/campaignSetupPresentation.js";
+import { loadGameState } from "../save/saveGame.js";
 
 const CARD_POSITIONS: readonly { x: number; y: number }[] = [
   { x: 320, y: 260 },
@@ -114,6 +115,40 @@ export class CampaignSetupScene extends Phaser.Scene {
         playerNationId: this.selectedNationId,
       });
       this.scene.start("MainScene", { state, showTutorial: true });
+    });
+
+    const loadText = this.add
+      .text(640, 700, "LOAD CAMPAIGN", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "13px",
+        color: "#f5f7fa",
+        backgroundColor: "#263244",
+        fontStyle: "bold",
+        padding: { left: 14, right: 14, top: 8, bottom: 8 },
+      })
+      .setOrigin(0.5, 0.5)
+      .setInteractive({ useHandCursor: true });
+
+    const loadStatus = this.add
+      .text(640, 742, "", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "11px",
+        color: "#8f9caf",
+      })
+      .setOrigin(0.5, 0.5);
+
+    loadText.on("pointerdown", () => {
+      try {
+        const loaded = loadGameState(window.localStorage);
+        if (loaded === null) {
+          loadStatus.setText("NO SAVED CAMPAIGN");
+        } else {
+          this.scene.start("MainScene", { state: loaded });
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        loadStatus.setText(`ERROR: ${message}`);
+      }
     });
 
     for (let i = 0; i < cardRects.length; i++) {

@@ -9,6 +9,7 @@ import { renderIntelligenceDashboard } from "../ui/renderIntelligenceDashboard.j
 import { renderConspiracyBoard } from "../ui/renderConspiracyBoard.js";
 import { renderOperationPlanner } from "../ui/renderOperationPlanner.js";
 import { renderTurnResolution } from "../ui/renderTurnResolution.js";
+import { renderSaveLoad } from "../ui/renderSaveLoad.js";
 import { renderTutorial } from "../ui/renderTutorial.js";
 
 interface MainSceneData {
@@ -64,6 +65,12 @@ export class MainScene extends Phaser.Scene {
         });
       },
     );
+    renderSaveLoad(this, state, (loadedState) => {
+      this.scene.restart({
+        state: loadedState,
+        pendingTurnEvents: [],
+      });
+    });
     renderTutorial(this, this.showTutorial);
   }
 }
