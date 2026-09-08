@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G5.2 — Campaign Setup
+**Current milestone:** G5.3 — Events & Crisis System
 
-**Next milestone:** G5.3 — Events & Crisis System
+**Next milestone:** G5.4 — Tutorial

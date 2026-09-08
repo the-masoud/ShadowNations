@@ -1,7 +1,7 @@
 import type { GameState } from "../../core/model/gameState.js";
 import type { TurnResult } from "../../core/model/turnResult.js";
 import { validateGameState } from "../../core/simulation/validateGameState.js";
-import { resolveTurn } from "../../core/simulation/resolveTurn.js";
+import { resolveCampaignTurn } from "../../core/simulation/resolveCampaignTurn.js";
 
 export function executeTurnResolution(
   state: Readonly<GameState>,
@@ -10,5 +10,5 @@ export function executeTurnResolution(
   readonly result: TurnResult;
 } {
   validateGameState(state);
-  return resolveTurn(state, []);
+  return resolveCampaignTurn(state, []);
 }

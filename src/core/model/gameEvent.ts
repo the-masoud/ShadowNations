@@ -7,6 +7,8 @@ import type { CounterintelligenceAwarenessLevel } from "./counterintelligenceAwa
 import type { DiplomaticStatus } from "./diplomaticRelationship.js";
 import type { CovertSabotageObjective } from "./covertSabotage.js";
 import type { ProxyConflictId, ProxyConflictIntensity } from "./proxyConflict.js";
+import type { CampaignCrisisKind } from "./campaignCrisis.js";
+import type { NationStrategicStatKey } from "./nationStrategicStats.js";
 
 export interface IntelligenceNetworkBuiltEvent {
   readonly type: "intelligence-network-built";
@@ -160,6 +162,16 @@ export interface RegimePressureAppliedEvent {
   readonly actionPointCost: number;
 }
 
+export interface CampaignCrisisTriggeredEvent {
+  readonly type: "campaign-crisis-triggered";
+  readonly turn: number;
+  readonly targetNationId: NationId;
+  readonly crisis: CampaignCrisisKind;
+  readonly strategicStat: NationStrategicStatKey;
+  readonly previousValue: number;
+  readonly newValue: number;
+}
+
 export type GameEvent =
   | IntelligenceNetworkBuiltEvent
   | IntelligenceGatheredEvent
@@ -174,4 +186,5 @@ export type GameEvent =
   | CovertSabotageConductedEvent
   | ProxyConflictStartedEvent
   | ProxyConflictEscalatedEvent
-  | RegimePressureAppliedEvent;
+  | RegimePressureAppliedEvent
+  | CampaignCrisisTriggeredEvent;
