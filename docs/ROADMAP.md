@@ -66,6 +66,8 @@ Milestone order may only change by an explicit project decision.
 - G5.6 — Replay / Timeline
 - G5.7 — Balance Pass
 - G5.8 — G5 Acceptance
+- G5.9 — Cities & Capitals
+- G5.10 — Extended Campaign Acceptance
 
 ## G6 — RELEASE
 
@@ -80,6 +82,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G5.8 — G5 Acceptance
+**Current milestone:** G5.9 — Cities & Capitals
 
-**Next milestone:** G6.1 — Visual Polish
+**Next milestone:** G5.10 — Extended Campaign Acceptance
