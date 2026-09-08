@@ -80,6 +80,6 @@ Milestone order may only change by an explicit project decision.
 
 ---
 
-**Current milestone:** G4.2 — Nation & Region UI
+**Current milestone:** G4.3 — Intelligence Dashboard
 
-**Next milestone:** G4.3 — Intelligence Dashboard
+**Next milestone:** G4.4 — Conspiracy Board
