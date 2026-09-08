@@ -9,15 +9,18 @@ import { renderIntelligenceDashboard } from "../ui/renderIntelligenceDashboard.j
 import { renderConspiracyBoard } from "../ui/renderConspiracyBoard.js";
 import { renderOperationPlanner } from "../ui/renderOperationPlanner.js";
 import { renderTurnResolution } from "../ui/renderTurnResolution.js";
+import { renderTutorial } from "../ui/renderTutorial.js";
 
 interface MainSceneData {
   readonly state?: GameState;
   readonly pendingTurnEvents?: readonly GameEvent[];
+  readonly showTutorial?: boolean;
 }
 
 export class MainScene extends Phaser.Scene {
   private state!: GameState;
   private pendingTurnEvents: readonly GameEvent[] = [];
+  private showTutorial = false;
 
   constructor() {
     super({ key: "MainScene" });
@@ -30,6 +33,7 @@ export class MainScene extends Phaser.Scene {
     this.pendingTurnEvents = data?.pendingTurnEvents
       ? [...data.pendingTurnEvents]
       : [];
+    this.showTutorial = data?.showTutorial === true;
   }
 
   create(): void {
@@ -60,5 +64,6 @@ export class MainScene extends Phaser.Scene {
         });
       },
     );
+    renderTutorial(this, this.showTutorial);
   }
 }

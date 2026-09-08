@@ -113,7 +113,7 @@ export class CampaignSetupScene extends Phaser.Scene {
       const state = createCampaignGameState({
         playerNationId: this.selectedNationId,
       });
-      this.scene.start("MainScene", { state });
+      this.scene.start("MainScene", { state, showTutorial: true });
     });
 
     for (let i = 0; i < cardRects.length; i++) {
