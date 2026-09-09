@@ -56,7 +56,6 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#0a0e17");
 
     const state = this.state;
-    renderStrategicMap(this, state);
 
     const dossierResult = renderCityDossier(this, state, (result) => {
       const timeline = appendOperationTimelineEntry(
@@ -71,9 +70,15 @@ export class MainScene extends Phaser.Scene {
       });
     });
 
-    renderNationRegionUi(this, state, (cityId) => {
+    const nationRegionController = renderNationRegionUi(this, state, (cityId) => {
       dossierResult.open(cityId);
     });
+
+    renderStrategicMap(this, state, (cityId, regionId) => {
+      nationRegionController.selectRegion(regionId);
+      dossierResult.open(cityId);
+    });
+
     renderIntelligenceDashboard(this, state);
     renderConspiracyBoard(this, state);
     renderOperationPlanner(this, state, (result) => {

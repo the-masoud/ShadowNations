@@ -1,10 +1,17 @@
 import Phaser from "phaser";
 import type { GameState } from "../../core/model/gameState.js";
+import type { CityId } from "../../core/model/city.js";
+import type { RegionId } from "../../core/model/region.js";
 import {
   getStrategicMapNationColor,
 } from "./strategicMapPresentation.js";
 import { createCityMapPresentationModel } from "./cityMapPresentation.js";
 import type { CityMapRoleShape, CityMapSecurityBand } from "./cityMapPresentation.js";
+import {
+  createInitialCityMapInteractionState,
+  selectCityMapCity,
+  hoverCityMapCity,
+} from "./cityMapInteraction.js";
 
 const LEGEND_MARKER_POSITIONS: ReadonlyMap<string, number> = new Map([
   ["solaris", 82],
@@ -28,6 +35,16 @@ const NODE_RADIUS = 14;
 const RING_RADIUS = 20;
 const RING_ARC_DEG = 65;
 const RING_GAP_DEG = 10;
+
+const HOVER_RADIUS = 26;
+const HOVER_LINE = 1;
+const HOVER_COLOR = 0x66aacc;
+const HOVER_ALPHA = 0.45;
+
+const SELECTED_RADIUS = 31;
+const SELECTED_LINE = 2;
+const SELECTED_COLOR = 0x66aacc;
+const SELECTED_ALPHA = 0.75;
 
 function drawRoleShape(
   g: Phaser.GameObjects.Graphics,
@@ -113,6 +130,7 @@ function drawSecurityRing(
 export function renderStrategicMap(
   scene: Phaser.Scene,
   state: Readonly<GameState>,
+  onCitySelected?: (cityId: CityId, regionId: RegionId) => void,
 ): void {
   const g = scene.add.graphics();
   const nodes = createCityMapPresentationModel(state);
@@ -148,6 +166,48 @@ export function renderStrategicMap(
         color: "#aeb9c7",
       })
       .setOrigin(0.5);
+  }
+
+  if (onCitySelected) {
+    let interactionState = createInitialCityMapInteractionState();
+    const hoverRing = scene.add.graphics();
+    const selectedRing = scene.add.graphics();
+
+    function drawSelectedHighlight(cityId: CityId): void {
+      selectedRing.clear();
+      const node = nodes.find((n) => n.cityId === cityId);
+      if (node) {
+        selectedRing.lineStyle(SELECTED_LINE, SELECTED_COLOR, SELECTED_ALPHA);
+        selectedRing.strokeCircle(node.x, node.y, SELECTED_RADIUS);
+      }
+    }
+
+    drawSelectedHighlight(interactionState.selectedCityId);
+
+    for (const node of nodes) {
+      const zone = scene.add.zone(node.x, node.y, 56, 56);
+      zone.setOrigin(0.5);
+      zone.setInteractive({ useHandCursor: true });
+
+      zone.on("pointerover", () => {
+        interactionState = hoverCityMapCity(interactionState, node.cityId);
+        hoverRing.clear();
+        hoverRing.lineStyle(HOVER_LINE, HOVER_COLOR, HOVER_ALPHA);
+        hoverRing.strokeCircle(node.x, node.y, HOVER_RADIUS);
+      });
+
+      zone.on("pointerout", () => {
+        interactionState = hoverCityMapCity(interactionState, null);
+        hoverRing.clear();
+      });
+
+      zone.on("pointerdown", () => {
+        interactionState = selectCityMapCity(interactionState, node.cityId);
+        drawSelectedHighlight(interactionState.selectedCityId);
+        hoverRing.clear();
+        onCitySelected(interactionState.selectedCityId, interactionState.selectedRegionId);
+      });
+    }
   }
 
   scene.add
