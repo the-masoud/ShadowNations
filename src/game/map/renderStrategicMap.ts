@@ -1,11 +1,10 @@
 import Phaser from "phaser";
 import type { GameState } from "../../core/model/gameState.js";
-import { getRegionOwnership } from "../../core/model/regionOwnership.js";
-import { validateGameState } from "../../core/simulation/validateGameState.js";
 import {
-  getStrategicMapRegionLayout,
   getStrategicMapNationColor,
 } from "./strategicMapPresentation.js";
+import { createCityMapPresentationModel } from "./cityMapPresentation.js";
+import type { CityMapRoleShape, CityMapSecurityBand } from "./cityMapPresentation.js";
 
 const LEGEND_MARKER_POSITIONS: ReadonlyMap<string, number> = new Map([
   ["solaris", 82],
@@ -18,52 +17,134 @@ const LEGEND_MARKER_POSITIONS: ReadonlyMap<string, number> = new Map([
 
 const LEGEND_Y = 715;
 
+const BAND_COLORS: ReadonlyMap<CityMapSecurityBand, number> = new Map([
+  ["BREACHED", 0xcc5555],
+  ["COMPROMISED", 0xcc9933],
+  ["GUARDED", 0x6699aa],
+  ["HARDENED", 0xddddcc],
+]);
+
+const NODE_RADIUS = 14;
+const RING_RADIUS = 20;
+const RING_ARC_DEG = 65;
+const RING_GAP_DEG = 10;
+
+function drawRoleShape(
+  g: Phaser.GameObjects.Graphics,
+  x: number,
+  y: number,
+  shape: CityMapRoleShape,
+  fillColor: number,
+): void {
+  g.fillStyle(fillColor, 0.92);
+  g.lineStyle(2, 0xe2e8f0, 1);
+
+  switch (shape) {
+    case "star": {
+      g.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const angle = (Math.PI / 2) + (i * Math.PI) / 5;
+        const r = i % 2 === 0 ? NODE_RADIUS : NODE_RADIUS * 0.5;
+        const px = x + r * Math.cos(angle);
+        const py = y - r * Math.sin(angle);
+        if (i === 0) g.moveTo(px, py);
+        else g.lineTo(px, py);
+      }
+      g.closePath();
+      g.fillPath();
+      g.strokePath();
+      break;
+    }
+    case "diamond": {
+      g.beginPath();
+      g.moveTo(x, y - NODE_RADIUS);
+      g.lineTo(x + NODE_RADIUS, y);
+      g.lineTo(x, y + NODE_RADIUS);
+      g.lineTo(x - NODE_RADIUS, y);
+      g.closePath();
+      g.fillPath();
+      g.strokePath();
+      break;
+    }
+    case "hexagon": {
+      g.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 6) + (i * Math.PI) / 3;
+        const px = x + NODE_RADIUS * Math.cos(angle);
+        const py = y - NODE_RADIUS * Math.sin(angle);
+        if (i === 0) g.moveTo(px, py);
+        else g.lineTo(px, py);
+      }
+      g.closePath();
+      g.fillPath();
+      g.strokePath();
+      break;
+    }
+  }
+}
+
+function drawSecurityRing(
+  g: Phaser.GameObjects.Graphics,
+  x: number,
+  y: number,
+  segments: 0 | 1 | 2 | 3 | 4,
+  band: CityMapSecurityBand | null,
+): void {
+  if (segments === 0) {
+    g.lineStyle(1, 0x3a4556, 0.35);
+    g.strokeCircle(x, y, RING_RADIUS);
+    return;
+  }
+
+  const color = band ? (BAND_COLORS.get(band) ?? 0x666666) : 0x666666;
+  const totalArc = segments * RING_ARC_DEG + (segments - 1) * RING_GAP_DEG;
+  let startAngle = -90 - totalArc / 2;
+
+  for (let i = 0; i < segments; i++) {
+    const endAngle = startAngle + RING_ARC_DEG;
+    g.lineStyle(3, color, 0.85);
+    g.beginPath();
+    g.arc(x, y, RING_RADIUS, Phaser.Math.DegToRad(startAngle), Phaser.Math.DegToRad(endAngle), false);
+    g.strokePath();
+    startAngle = endAngle + RING_GAP_DEG;
+  }
+}
+
 export function renderStrategicMap(
   scene: Phaser.Scene,
   state: Readonly<GameState>,
 ): void {
-  validateGameState(state);
-
   const g = scene.add.graphics();
+  const nodes = createCityMapPresentationModel(state);
 
   for (const conn of state.world.map.connections) {
-    const a = getStrategicMapRegionLayout(conn.a);
-    const b = getStrategicMapRegionLayout(conn.b);
-    g.lineStyle(2, 0x344052, 0.85);
-    g.lineBetween(a.x, a.y, b.x, b.y);
+    const aNode = nodes.find((n) => n.regionId === conn.a);
+    const bNode = nodes.find((n) => n.regionId === conn.b);
+    if (aNode && bNode) {
+      g.lineStyle(2, 0x344052, 0.85);
+      g.lineBetween(aNode.x, aNode.y, bNode.x, bNode.y);
+    }
   }
 
-  for (const region of state.world.map.regions) {
-    const layout = getStrategicMapRegionLayout(region.id);
-    const ownership = getRegionOwnership(state.world, region.id);
-    const color = getStrategicMapNationColor(ownership.ownerNationId);
-
-    g.fillStyle(color, 0.92);
-    g.lineStyle(2, 0xe2e8f0, 1);
-    g.fillCircle(layout.x, layout.y, 24);
-    g.strokeCircle(layout.x, layout.y, 24);
+  for (const node of nodes) {
+    drawSecurityRing(g, node.x, node.y, node.securitySegments, node.securityBand);
+    drawRoleShape(g, node.x, node.y, node.roleShape, node.ownerColor);
   }
 
-  for (const region of state.world.map.regions) {
-    const layout = getStrategicMapRegionLayout(region.id);
-
+  for (const node of nodes) {
     scene.add
-      .text(layout.x, layout.y, region.code, {
+      .text(node.x, node.y - 26, node.cityName, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "12px",
+        fontSize: "10px",
         color: "#f5f7fa",
         fontStyle: "bold",
       })
       .setOrigin(0.5);
-  }
-
-  for (const region of state.world.map.regions) {
-    const layout = getStrategicMapRegionLayout(region.id);
 
     scene.add
-      .text(layout.x, layout.y + 34, region.name, {
+      .text(node.x, node.y + 24, node.regionCode, {
         fontFamily: "Arial, sans-serif",
-        fontSize: "11px",
+        fontSize: "10px",
         color: "#aeb9c7",
       })
       .setOrigin(0.5);

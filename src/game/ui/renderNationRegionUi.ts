@@ -138,8 +138,8 @@ export function renderNationRegionUi(
 
     const layout = getStrategicMapRegionLayout(regionId);
     selectionHighlight.clear();
-    selectionHighlight.lineStyle(3, 0xffffff, 0.95);
-    selectionHighlight.strokeCircle(layout.x, layout.y, 30);
+    selectionHighlight.lineStyle(2, 0x66aacc, 0.6);
+    selectionHighlight.strokeCircle(layout.x, layout.y, 34);
   }
 
   const initialRegionId = state.world.map.regions[0].id;
