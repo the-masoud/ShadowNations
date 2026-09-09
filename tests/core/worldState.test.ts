@@ -110,6 +110,7 @@ describe("validateWorldState", () => {
       diplomaticRelationships: [],
       proxyConflicts: [],
       nationRegimePressure: [],
+      citySecurity: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -130,6 +131,7 @@ describe("validateWorldState", () => {
       diplomaticRelationships: [],
       proxyConflicts: [],
       nationRegimePressure: [],
+      citySecurity: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -147,6 +149,7 @@ describe("validateWorldState", () => {
       diplomaticRelationships: [],
       proxyConflicts: [],
       nationRegimePressure: [],
+      citySecurity: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow("Empty nation ID");
@@ -162,6 +165,7 @@ describe("validateWorldState", () => {
       diplomaticRelationships: [],
       proxyConflicts: [],
       nationRegimePressure: [],
+      citySecurity: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(
@@ -179,6 +183,7 @@ describe("validateWorldState", () => {
       diplomaticRelationships: [],
       proxyConflicts: [],
       nationRegimePressure: [],
+      citySecurity: [],
     };
     expect(() => validateWorldState(world)).toThrow(WorldValidationError);
     expect(() => validateWorldState(world)).toThrow(

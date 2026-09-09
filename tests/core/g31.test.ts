@@ -574,6 +574,7 @@ describe("G3.1 — AI Perception", () => {
       const state = createInitialGameState();
       const keys = Object.keys(state.world).sort();
       expect(keys).toEqual([
+        "citySecurity",
         "diplomaticRelationships",
         "map",
         "nationInfluence",

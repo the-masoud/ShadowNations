@@ -8,6 +8,8 @@ import { createInitialDiplomaticRelationships, validateDiplomaticRelationships, 
 import type { ProxyConflict } from "./proxyConflict.js";
 import { validateProxyConflicts } from "../simulation/validateProxyConflicts.js";
 import { createInitialNationRegimePressure, validateNationRegimePressure, type NationRegimePressure } from "./nationRegimePressure.js";
+import { createInitialCitySecurity, validateCitySecurity } from "./citySecurity.js";
+import type { CitySecurity } from "./citySecurity.js";
 
 export class UnknownNationError extends Error {
   constructor(nationId: NationId) {
@@ -32,6 +34,7 @@ export interface WorldState {
   readonly diplomaticRelationships: readonly DiplomaticRelationship[];
   readonly proxyConflicts: readonly ProxyConflict[];
   readonly nationRegimePressure: readonly NationRegimePressure[];
+  readonly citySecurity: readonly CitySecurity[];
 }
 
 export function createInitialWorldState(): WorldState {
@@ -71,6 +74,7 @@ export function createInitialWorldState(): WorldState {
     diplomaticRelationships: createInitialDiplomaticRelationships(nations),
     proxyConflicts: [],
     nationRegimePressure: createInitialNationRegimePressure(nations),
+    citySecurity: createInitialCitySecurity(),
   };
 }
 
@@ -116,4 +120,5 @@ export function validateWorldState(world: Readonly<WorldState>): void {
   validateDiplomaticRelationships(world);
   validateProxyConflicts(world);
   validateNationRegimePressure(world);
+  validateCitySecurity(world);
 }

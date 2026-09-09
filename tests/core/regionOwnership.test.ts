@@ -47,6 +47,7 @@ function minimalWorld(overrides?: Partial<WorldState>): WorldState {
     diplomaticRelationships: [],
     proxyConflicts: [],
     nationRegimePressure: [],
+    citySecurity: [],
     ...overrides,
   };
 }

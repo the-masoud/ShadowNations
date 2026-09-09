@@ -44,10 +44,20 @@ function createInspectableMemoryStorage(): {
   };
 }
 
+function createVersion1StateFixture(
+  state = createInitialGameState(),
+): unknown {
+  const fixture = JSON.parse(JSON.stringify(state)) as {
+    world: Record<string, unknown>;
+  };
+  delete fixture.world.citySecurity;
+  return fixture;
+}
+
 describe("saveGame", () => {
   // A — exact constants
   it("A: exact constants", () => {
-    expect(SAVE_GAME_VERSION).toBe(1);
+    expect(SAVE_GAME_VERSION).toBe(2);
     expect(SAVE_GAME_STORAGE_KEY).toBe("shadow-nations.save.v1");
   });
 
@@ -57,7 +67,7 @@ describe("saveGame", () => {
     const serialized = serializeGameState(state);
     const parsed = JSON.parse(serialized);
     expect(Object.keys(parsed)).toEqual(["version", "state"]);
-    expect(parsed.version).toBe(1);
+    expect(parsed.version).toBe(2);
     expect(parsed.state).toEqual(state);
   });
 
@@ -106,7 +116,7 @@ describe("saveGame", () => {
 
   // H — missing state key
   it("H: missing state key", () => {
-    const envelope = JSON.stringify({ version: 1 });
+    const envelope = JSON.stringify({ version: 2 });
     expect(() => deserializeGameState(envelope)).toThrow(
       SaveGameFormatError,
     );
@@ -118,12 +128,12 @@ describe("saveGame", () => {
   // I — unsupported version
   it("I: unsupported version", () => {
     const state = createInitialGameState();
-    const envelope = JSON.stringify({ version: 2, state });
+    const envelope = JSON.stringify({ version: 3, state });
     expect(() => deserializeGameState(envelope)).toThrow(
       SaveGameFormatError,
     );
     expect(() => deserializeGameState(envelope)).toThrow(
-      "Unsupported save version: 2.",
+      "Unsupported save version: 3.",
     );
   });
 
@@ -131,7 +141,7 @@ describe("saveGame", () => {
   it("J: malformed saved state", () => {
     const state = createInitialGameState();
     const badState = { ...state, turn: 0 };
-    const envelope = JSON.stringify({ version: 1, state: badState });
+    const envelope = JSON.stringify({ version: 2, state: badState });
     expect(() => deserializeGameState(envelope)).toThrow(
       SaveGameFormatError,
     );
@@ -218,5 +228,114 @@ describe("saveGame", () => {
     expect(() => serializeGameState(badState as never)).toThrow(
       GameStateValidationError,
     );
+  });
+
+  // R — version 1 migration
+  it("R: version 1 migration loads successfully", () => {
+    const v1Fixture = createVersion1StateFixture();
+    expect(v1Fixture).not.toHaveProperty("citySecurity");
+    expect((v1Fixture as { world: Record<string, unknown> }).world).not.toHaveProperty("citySecurity");
+    const v1Envelope = JSON.stringify({ version: 1, state: v1Fixture });
+    const loaded = deserializeGameState(v1Envelope);
+    expect(loaded).toBeDefined();
+    expect(loaded.world.citySecurity).toBeDefined();
+    expect(loaded.world.citySecurity).toHaveLength(18);
+  });
+
+  it("R1: migrated v1 City Security equals canonical baseSecurity", async () => {
+    const v1Fixture = createVersion1StateFixture();
+    const v1Envelope = JSON.stringify({ version: 1, state: v1Fixture });
+    const loaded = deserializeGameState(v1Envelope);
+    const { CANONICAL_CITIES } = await import("../../src/core/model/city.js");
+    for (const city of CANONICAL_CITIES) {
+      const security = loaded.world.citySecurity.find(
+        (s: { cityId: string; value: number }) => s.cityId === city.id,
+      );
+      expect(security).toBeDefined();
+      expect(security!.value).toBe(city.baseSecurity);
+    }
+  });
+
+  it("R2: v1 migration preserves progressed campaign", () => {
+    let state = createCampaignGameState({ playerNationId: "dravos" });
+    state = setNationStrategicStat(state, "dravos", "stability", 71);
+    state = { ...state, turn: 5 };
+    const v1Fixture = createVersion1StateFixture(state);
+    const v1Envelope = JSON.stringify({ version: 1, state: v1Fixture });
+    const loaded = deserializeGameState(v1Envelope);
+    expect(loaded.playerNationId).toBe("dravos");
+    expect(loaded.turn).toBe(5);
+    const dravosStats = loaded.world.nationStrategicStats.find(
+      (s) => s.nationId === "dravos",
+    );
+    expect(dravosStats!.stability).toBe(71);
+  });
+
+  it("R3: v1 migration produces new state/world objects", () => {
+    const v1Fixture = createVersion1StateFixture();
+    const v1Envelope = JSON.stringify({ version: 1, state: v1Fixture });
+    const loaded = deserializeGameState(v1Envelope);
+    expect(loaded).not.toBe(v1Fixture);
+    expect(loaded.world).not.toBe((v1Fixture as { world: unknown }).world);
+  });
+
+  it("R4: malformed v1 world fails with invalid state", () => {
+    const v1Envelope = JSON.stringify({
+      version: 1,
+      state: { ...createInitialGameState(), world: {} },
+    });
+    expect(() => deserializeGameState(v1Envelope)).toThrow(
+      SaveGameFormatError,
+    );
+    expect(() => deserializeGameState(v1Envelope)).toThrow(
+      "Saved campaign state is invalid.",
+    );
+  });
+
+  it("R5: v2 state missing citySecurity fails", () => {
+    const v2State = { ...createInitialGameState(), world: { ...createInitialGameState().world } };
+    delete (v2State.world as any).citySecurity;
+    const envelope = JSON.stringify({ version: 2, state: v2State });
+    expect(() => deserializeGameState(envelope)).toThrow(
+      SaveGameFormatError,
+    );
+    expect(() => deserializeGameState(envelope)).toThrow(
+      "Saved campaign state is invalid.",
+    );
+  });
+
+  it("R6: v2 state with invalid citySecurity fails", () => {
+    const v2State = createInitialGameState();
+    const badSecurity = [...v2State.world.citySecurity, { cityId: "solara", value: -1 }];
+    const badWorld = { ...v2State.world, citySecurity: badSecurity };
+    const envelope = JSON.stringify({ version: 2, state: { ...v2State, world: badWorld } });
+    expect(() => deserializeGameState(envelope)).toThrow(
+      SaveGameFormatError,
+    );
+    expect(() => deserializeGameState(envelope)).toThrow(
+      "Saved campaign state is invalid.",
+    );
+  });
+
+  it("R7: load v1 does not rewrite storage", () => {
+    const v1Fixture = createVersion1StateFixture();
+    const v1Envelope = JSON.stringify({ version: 1, state: v1Fixture });
+    const { storage, data } = createInspectableMemoryStorage();
+    data.set(SAVE_GAME_STORAGE_KEY, v1Envelope);
+    loadGameState(storage);
+    expect(data.get(SAVE_GAME_STORAGE_KEY)).toBe(v1Envelope);
+  });
+
+  it("R8: explicit save after v1 load writes v2 to same slot", () => {
+    const v1Fixture = createVersion1StateFixture();
+    const v1Envelope = JSON.stringify({ version: 1, state: v1Fixture });
+    const { storage, data } = createInspectableMemoryStorage();
+    data.set(SAVE_GAME_STORAGE_KEY, v1Envelope);
+    const loaded = loadGameState(storage)!;
+    saveGameState(storage, loaded);
+    const saved = data.get(SAVE_GAME_STORAGE_KEY);
+    expect(saved).not.toBeNull();
+    const parsed = JSON.parse(saved!);
+    expect(parsed.version).toBe(2);
   });
 });
