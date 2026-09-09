@@ -29,6 +29,7 @@ const EVENT_LABELS: Record<GameEvent["type"], string> = {
   "proxy-conflict-escalated": "PROXY CONFLICT ESCALATED",
   "regime-pressure-applied": "REGIME PRESSURE APPLIED",
   "campaign-crisis-triggered": "CAMPAIGN CRISIS",
+  "city-security-normalized": "CITY SECURITY NORMALIZED",
 };
 
 export function createTurnResolutionPresentationModel(

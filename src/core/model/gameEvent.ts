@@ -9,6 +9,7 @@ import type { CovertSabotageObjective } from "./covertSabotage.js";
 import type { ProxyConflictId, ProxyConflictIntensity } from "./proxyConflict.js";
 import type { CampaignCrisisKind } from "./campaignCrisis.js";
 import type { NationStrategicStatKey } from "./nationStrategicStats.js";
+import type { CityId } from "./city.js";
 
 export interface IntelligenceNetworkBuiltEvent {
   readonly type: "intelligence-network-built";
@@ -172,6 +173,15 @@ export interface CampaignCrisisTriggeredEvent {
   readonly newValue: number;
 }
 
+export interface CitySecurityNormalizedEvent {
+  readonly type: "city-security-normalized";
+  readonly turn: number;
+  readonly cityId: CityId;
+  readonly previousSecurity: number;
+  readonly newSecurity: number;
+  readonly baseSecurity: number;
+}
+
 export type GameEvent =
   | IntelligenceNetworkBuiltEvent
   | IntelligenceGatheredEvent
@@ -187,4 +197,5 @@ export type GameEvent =
   | ProxyConflictStartedEvent
   | ProxyConflictEscalatedEvent
   | RegimePressureAppliedEvent
-  | CampaignCrisisTriggeredEvent;
+  | CampaignCrisisTriggeredEvent
+  | CitySecurityNormalizedEvent;
