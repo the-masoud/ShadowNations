@@ -4,7 +4,6 @@ import type { RegionId } from "../../core/model/region.js";
 import type { CityId } from "../../core/model/city.js";
 import { getCityByRegionId } from "../../core/model/city.js";
 import { validateGameState } from "../../core/simulation/validateGameState.js";
-import { getStrategicMapRegionLayout } from "../map/strategicMapPresentation.js";
 import { createNationRegionPanelModel } from "./nationRegionPresentation.js";
 
 const PANEL_X = 1024;
@@ -24,11 +23,15 @@ const DYNAMIC_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   color: "#c3ccd8",
 };
 
+export interface NationRegionUiController {
+  readonly selectRegion: (regionId: RegionId) => void;
+}
+
 export function renderNationRegionUi(
   scene: Phaser.Scene,
   state: Readonly<GameState>,
   onOpenCityDossier?: (cityId: CityId) => void,
-): void {
+): NationRegionUiController {
   validateGameState(state);
 
   const panelG = scene.add.graphics();
@@ -106,14 +109,17 @@ export function renderNationRegionUi(
     .setOrigin(0, 0.5);
 
   const ownedRegionCountText = scene.add
-    .text(1048, 484, "", DYNAMIC_STYLE)
+    .text(1048, 478, "", DYNAMIC_STYLE)
     .setOrigin(0, 0.5);
 
   const ownerMarker = scene.add.graphics();
 
   const selectionHighlight = scene.add.graphics();
 
+  let selectedRegionId: RegionId = state.world.map.regions[0].id;
+
   function selectRegion(regionId: RegionId): void {
+    selectedRegionId = regionId;
     const model = createNationRegionPanelModel(state, regionId);
 
     regionNameText.setText(model.regionName);
@@ -136,44 +142,28 @@ export function renderNationRegionUi(
     ownerMarker.fillStyle(model.ownerColor, 1);
     ownerMarker.fillCircle(1055, 232, 7);
 
-    const layout = getStrategicMapRegionLayout(regionId);
     selectionHighlight.clear();
-    selectionHighlight.lineStyle(2, 0x66aacc, 0.6);
-    selectionHighlight.strokeCircle(layout.x, layout.y, 34);
   }
 
-  const initialRegionId = state.world.map.regions[0].id;
-  let selectedRegionId = initialRegionId;
-  selectRegion(initialRegionId);
-
-  let cityDossierText: Phaser.GameObjects.Text | null = null;
+  selectRegion(selectedRegionId);
 
   if (onOpenCityDossier) {
-    cityDossierText = scene.add
-      .text(1048, 520, "CITY DOSSIER", {
+    scene.add
+      .text(1048, 505, "CITY DOSSIER", {
         fontFamily: "Arial, sans-serif",
-        fontSize: "12px",
-        color: "#d7dee8",
-        backgroundColor: "#111827",
-        padding: { left: 10, right: 10, top: 6, bottom: 6 },
+        fontSize: "11px",
+        fontStyle: "bold",
+        color: "#f5f7fa",
+        backgroundColor: "#263244",
+        padding: { left: 12, right: 12, top: 5, bottom: 5 },
       })
       .setOrigin(0, 0.5)
-      .setInteractive({ useHandCursor: true });
-
-    cityDossierText.on("pointerdown", () => {
-      const city = getCityByRegionId(selectedRegionId);
-      onOpenCityDossier(city.id);
-    });
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => {
+        const city = getCityByRegionId(selectedRegionId);
+        onOpenCityDossier(city.id);
+      });
   }
 
-  for (const region of state.world.map.regions) {
-    const layout = getStrategicMapRegionLayout(region.id);
-    const zone = scene.add.zone(layout.x, layout.y, 48, 48);
-    zone.setOrigin(0.5);
-    zone.setInteractive();
-    zone.on("pointerdown", () => {
-      selectedRegionId = region.id;
-      selectRegion(region.id);
-    });
-  }
+  return { selectRegion };
 }
