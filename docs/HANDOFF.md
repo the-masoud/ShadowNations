@@ -274,3 +274,20 @@ Full gate when explicitly required:
 npm test
 npm run build
 ```
+## 13) Handoff branch / new-chat bootstrap
+
+Everything that was still uncommitted at handoff has been preserved on GitHub in:
+
+`wip/g59-cp7-handoff`
+
+First WIP preservation commit:
+
+`348dca27c0d7702524947187be7c70ef3f1698aa`
+
+Accepted `main` intentionally remains at CP6:
+
+`782ab5bf114d3a308d50baba21e3708133ab3b17`
+
+Suggested first message in the next chat:
+
+> Continue Shadow Nations from `docs/HANDOFF.md`. Use branch `wip/g59-cp7-handoff` first. Read `docs/ROADMAP.md`, verify branch/hash/status, and independently audit before changing anything. CP6 is accepted on main; CP7 is WIP with tests/build already passed once but still needs browser visual verification. Do not rerun the full hard gate unless a repair requires it. Do not invent city artwork as part of CP7; current game has symbolic city nodes and a text/UI dossier, not city artwork.
