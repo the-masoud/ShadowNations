@@ -88,7 +88,7 @@ describe("turnResolutionPresentation", () => {
   });
 
   // G — Event label mapping
-  it("G: all 15 event types map to exact labels", () => {
+  it("G: all 18 static event types map to exact labels", () => {
     const state = createInitialGameState();
     const { result } = executeTurnResolution(state);
     const allTypes: GameEvent["type"][] = [
@@ -107,6 +107,9 @@ describe("turnResolutionPresentation", () => {
       "proxy-conflict-escalated",
       "regime-pressure-applied",
       "city-security-normalized",
+      "city-infiltrated",
+      "urban-disruption-conducted",
+      "city-black-operation-conducted",
     ];
     const expectedLabels: string[] = [
       "INTELLIGENCE NETWORK BUILT",
@@ -124,6 +127,9 @@ describe("turnResolutionPresentation", () => {
       "PROXY CONFLICT ESCALATED",
       "REGIME PRESSURE APPLIED",
       "CITY SECURITY NORMALIZED",
+      "CITY INFILTRATED",
+      "URBAN DISRUPTION CONDUCTED",
+      "CITY BLACK OPERATION CONDUCTED",
     ];
     for (let i = 0; i < allTypes.length; i++) {
       const fakeEvents = [{ type: allTypes[i] }] as unknown as GameEvent[];

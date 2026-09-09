@@ -182,6 +182,48 @@ export interface CitySecurityNormalizedEvent {
   readonly baseSecurity: number;
 }
 
+export interface CityInfiltratedEvent {
+  readonly type: "city-infiltrated";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly cityId: CityId;
+  readonly agentId: AgentId;
+  readonly previousSecurity: number;
+  readonly newSecurity: number;
+  readonly actionPointCost: number;
+}
+
+export interface UrbanDisruptionConductedEvent {
+  readonly type: "urban-disruption-conducted";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly cityId: CityId;
+  readonly agentId: AgentId;
+  readonly strategicStat: NationStrategicStatKey;
+  readonly previousValue: number;
+  readonly newValue: number;
+  readonly previousSecurity: number;
+  readonly newSecurity: number;
+  readonly actionPointCost: number;
+}
+
+export interface CityBlackOperationConductedEvent {
+  readonly type: "city-black-operation-conducted";
+  readonly turn: number;
+  readonly actorNationId: NationId;
+  readonly targetNationId: NationId;
+  readonly cityId: CityId;
+  readonly agentId: AgentId;
+  readonly strategicStat: NationStrategicStatKey;
+  readonly previousValue: number;
+  readonly newValue: number;
+  readonly previousSecurity: number;
+  readonly newSecurity: number;
+  readonly actionPointCost: number;
+}
+
 export type GameEvent =
   | IntelligenceNetworkBuiltEvent
   | IntelligenceGatheredEvent
@@ -198,4 +240,7 @@ export type GameEvent =
   | ProxyConflictEscalatedEvent
   | RegimePressureAppliedEvent
   | CampaignCrisisTriggeredEvent
-  | CitySecurityNormalizedEvent;
+  | CitySecurityNormalizedEvent
+  | CityInfiltratedEvent
+  | UrbanDisruptionConductedEvent
+  | CityBlackOperationConductedEvent;

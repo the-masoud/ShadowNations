@@ -30,6 +30,9 @@ const EVENT_LABELS: Record<GameEvent["type"], string> = {
   "regime-pressure-applied": "REGIME PRESSURE APPLIED",
   "campaign-crisis-triggered": "CAMPAIGN CRISIS",
   "city-security-normalized": "CITY SECURITY NORMALIZED",
+  "city-infiltrated": "CITY INFILTRATED",
+  "urban-disruption-conducted": "URBAN DISRUPTION CONDUCTED",
+  "city-black-operation-conducted": "CITY BLACK OPERATION CONDUCTED",
 };
 
 export function createTurnResolutionPresentationModel(
