@@ -14,6 +14,7 @@ import { renderNationRegionUi } from "../ui/renderNationRegionUi.js";
 import { renderIntelligenceDashboard } from "../ui/renderIntelligenceDashboard.js";
 import { renderConspiracyBoard } from "../ui/renderConspiracyBoard.js";
 import { renderOperationPlanner } from "../ui/renderOperationPlanner.js";
+import { renderCityDossier } from "../ui/renderCityDossier.js";
 import { renderTurnResolution } from "../ui/renderTurnResolution.js";
 import { renderSaveLoad } from "../ui/renderSaveLoad.js";
 import { renderTimelineLauncher } from "../ui/renderTimelineLauncher.js";
@@ -56,7 +57,23 @@ export class MainScene extends Phaser.Scene {
 
     const state = this.state;
     renderStrategicMap(this, state);
-    renderNationRegionUi(this, state);
+
+    const dossierResult = renderCityDossier(this, state, (result) => {
+      const timeline = appendOperationTimelineEntry(
+        this.timeline,
+        result.state,
+        result.event,
+      );
+      this.scene.restart({
+        state: result.state,
+        pendingTurnEvents: [...this.pendingTurnEvents, result.event],
+        timeline,
+      });
+    });
+
+    renderNationRegionUi(this, state, (cityId) => {
+      dossierResult.open(cityId);
+    });
     renderIntelligenceDashboard(this, state);
     renderConspiracyBoard(this, state);
     renderOperationPlanner(this, state, (result) => {
