@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { COLORS, FONT_FAMILY, BUTTON_PADDING } from "./visualTheme.js";
 
 export function renderTimelineLauncher(
   scene: Phaser.Scene,
@@ -6,11 +7,11 @@ export function renderTimelineLauncher(
 ): void {
   scene.add
     .text(200, 24, "TIMELINE", {
-      fontFamily: "Arial, sans-serif",
+      fontFamily: FONT_FAMILY,
       fontSize: "12px",
-      color: "#d7dee8",
-      backgroundColor: "#111827",
-      padding: { left: 10, right: 10, top: 6, bottom: 6 },
+      color: COLORS.titleText,
+      backgroundColor: COLORS.surfacePanelHex,
+      padding: BUTTON_PADDING.compact,
     })
     .setOrigin(0, 0)
     .setInteractive({ useHandCursor: true })

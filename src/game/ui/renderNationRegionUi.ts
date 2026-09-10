@@ -5,23 +5,11 @@ import type { CityId } from "../../core/model/city.js";
 import { getCityByRegionId } from "../../core/model/city.js";
 import { validateGameState } from "../../core/simulation/validateGameState.js";
 import { createNationRegionPanelModel } from "./nationRegionPresentation.js";
+import { COLORS, FONT_FAMILY, TYPOGRAPHY, BUTTON_PADDING, drawStandardPanel } from "./visualTheme.js";
 
 const PANEL_X = 1024;
 const PANEL_WIDTH = 256;
 const PANEL_HEIGHT = 768;
-
-const SECTION_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
-  fontFamily: "Arial, sans-serif",
-  fontSize: "11px",
-  color: "#7f8da1",
-  fontStyle: "bold",
-};
-
-const DYNAMIC_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
-  fontFamily: "Arial, sans-serif",
-  fontSize: "14px",
-  color: "#c3ccd8",
-};
 
 export interface NationRegionUiController {
   readonly selectRegion: (regionId: RegionId) => void;
@@ -35,81 +23,61 @@ export function renderNationRegionUi(
   validateGameState(state);
 
   const panelG = scene.add.graphics();
-  panelG.fillStyle(0x111827, 1);
-  panelG.fillRect(PANEL_X, 0, PANEL_WIDTH, PANEL_HEIGHT);
-  panelG.lineStyle(2, 0x2f3c4f, 1);
-  panelG.lineBetween(PANEL_X, 0, PANEL_X, PANEL_HEIGHT);
+  drawStandardPanel(panelG, PANEL_X, 0, PANEL_WIDTH, PANEL_HEIGHT);
 
   scene.add
-    .text(1048, 32, "REGION & NATION", {
-      fontFamily: "Arial, sans-serif",
-      fontSize: "18px",
-      color: "#d7dee8",
-      fontStyle: "bold",
-    })
+    .text(1048, 32, "REGION & NATION", TYPOGRAPHY.panelTitle)
     .setOrigin(0, 0.5);
 
-  scene.add.text(1048, 68, "REGION", SECTION_STYLE).setOrigin(0, 0.5);
-  scene.add.text(1048, 202, "OWNER NATION", SECTION_STYLE).setOrigin(0, 0.5);
-  scene.add.text(1048, 310, "STRATEGIC STATS", SECTION_STYLE).setOrigin(0, 0.5);
-  scene.add.text(1048, 454, "TERRITORY", SECTION_STYLE).setOrigin(0, 0.5);
+  scene.add.text(1048, 68, "REGION", TYPOGRAPHY.sectionHeading).setOrigin(0, 0.5);
+  scene.add.text(1048, 202, "OWNER NATION", TYPOGRAPHY.sectionHeading).setOrigin(0, 0.5);
+  scene.add.text(1048, 310, "STRATEGIC STATS", TYPOGRAPHY.sectionHeading).setOrigin(0, 0.5);
+  scene.add.text(1048, 454, "TERRITORY", TYPOGRAPHY.sectionHeading).setOrigin(0, 0.5);
 
   const regionNameText = scene.add
     .text(1048, 94, "", {
-      fontFamily: "Arial, sans-serif",
+      fontFamily: FONT_FAMILY,
       fontSize: "22px",
-      color: "#f5f7fa",
+      color: COLORS.primaryText,
       fontStyle: "bold",
     })
     .setOrigin(0, 0.5);
 
   const regionCodeText = scene.add
-    .text(1048, 122, "", {
-      fontFamily: "Arial, sans-serif",
-      fontSize: "12px",
-      color: "#aeb9c7",
-    })
+    .text(1048, 122, "", TYPOGRAPHY.code)
     .setOrigin(0, 0.5);
 
   const neighboringRegionCountText = scene.add
-    .text(1048, 150, "", {
-      fontFamily: "Arial, sans-serif",
-      fontSize: "13px",
-      color: "#c3ccd8",
-    })
+    .text(1048, 150, "", TYPOGRAPHY.dynamicValue)
     .setOrigin(0, 0.5);
 
   const ownerNationNameText = scene.add
     .text(1072, 232, "", {
-      fontFamily: "Arial, sans-serif",
+      fontFamily: FONT_FAMILY,
       fontSize: "18px",
-      color: "#f5f7fa",
+      color: COLORS.primaryText,
       fontStyle: "bold",
     })
     .setOrigin(0, 0.5);
 
   const ownerNationCodeText = scene.add
-    .text(1048, 260, "", {
-      fontFamily: "Arial, sans-serif",
-      fontSize: "12px",
-      color: "#aeb9c7",
-    })
+    .text(1048, 260, "", TYPOGRAPHY.code)
     .setOrigin(0, 0.5);
 
   const stabilityText = scene.add
-    .text(1048, 340, "", DYNAMIC_STYLE)
+    .text(1048, 340, "", TYPOGRAPHY.dynamicValue)
     .setOrigin(0, 0.5);
 
   const publicSupportText = scene.add
-    .text(1048, 370, "", DYNAMIC_STYLE)
+    .text(1048, 370, "", TYPOGRAPHY.dynamicValue)
     .setOrigin(0, 0.5);
 
   const internalSecurityText = scene.add
-    .text(1048, 400, "", DYNAMIC_STYLE)
+    .text(1048, 400, "", TYPOGRAPHY.dynamicValue)
     .setOrigin(0, 0.5);
 
   const ownedRegionCountText = scene.add
-    .text(1048, 478, "", DYNAMIC_STYLE)
+    .text(1048, 478, "", TYPOGRAPHY.dynamicValue)
     .setOrigin(0, 0.5);
 
   const ownerMarker = scene.add.graphics();
@@ -150,12 +118,11 @@ export function renderNationRegionUi(
   if (onOpenCityDossier) {
     scene.add
       .text(1048, 505, "CITY DOSSIER", {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "11px",
+        ...TYPOGRAPHY.metadata,
         fontStyle: "bold",
-        color: "#f5f7fa",
-        backgroundColor: "#263244",
-        padding: { left: 12, right: 12, top: 5, bottom: 5 },
+        color: COLORS.buttonPrimaryText,
+        backgroundColor: COLORS.buttonPrimaryHex,
+        padding: BUTTON_PADDING.sidebarAction,
       })
       .setOrigin(0, 0.5)
       .setInteractive({ useHandCursor: true })
