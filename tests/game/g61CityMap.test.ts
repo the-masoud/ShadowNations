@@ -17,10 +17,13 @@ vi.mock("phaser", () => {
 
 import { hasCityMap, getCityVisualEntry } from "../../src/game/city/cityVisualCatalog.js";
 import { CityScene } from "../../src/game/scenes/CityScene.js";
+import { BootScene } from "../../src/game/scenes/BootScene.js";
+import { createInitialGameState } from "../../src/core/model/gameState.js";
+import { createCityDossierModel } from "../../src/game/ui/cityDossierPresentation.js";
 
 const citySceneMethods = CityScene.prototype as unknown as Record<string, () => string>;
 
-describe("G6.1 CP2 — City Map", () => {
+describe("G6.1 CP3 — Dravos City Set", () => {
   it("1: Dravik has a city map entry", () => {
     expect(hasCityMap("dravik")).toBe(true);
     const entry = getCityVisualEntry("dravik");
@@ -35,41 +38,61 @@ describe("G6.1 CP2 — City Map", () => {
     expect(entry!.hasMap).toBe(true);
   });
 
-  it("3: non-Dravik cities return no map entry", () => {
-    expect(hasCityMap("solara")).toBe(false);
-    expect(hasCityMap("kragen")).toBe(false);
-    expect(hasCityMap("raskov")).toBe(false);
-    expect(hasCityMap("norhaven")).toBe(false);
-    expect(getCityVisualEntry("solara")).toBeUndefined();
-    expect(getCityVisualEntry("raskov")).toBeUndefined();
+  it("3: Kragen and Raskov have deterministic map entries", () => {
+    expect(hasCityMap("kragen")).toBe(true);
+    expect(hasCityMap("raskov")).toBe(true);
+    expect(getCityVisualEntry("kragen")).toEqual({
+      cityId: "kragen",
+      mapAsset: "/assets/cities/kragen/city-map.png",
+      hasMap: true,
+    });
+    expect(getCityVisualEntry("raskov")).toEqual({
+      cityId: "raskov",
+      mapAsset: "/assets/cities/raskov/city-map.png",
+      hasMap: true,
+    });
   });
 
-  it("4: cityVisualCatalog does not import src/core simulation", () => {
+  it("4: non-Dravos cities remain on the fallback path", () => {
+    expect(hasCityMap("solara")).toBe(false);
+    expect(hasCityMap("norhaven")).toBe(false);
+    expect(getCityVisualEntry("solara")).toBeUndefined();
+    expect(getCityVisualEntry("norhaven")).toBeUndefined();
+  });
+
+  it("5: cityVisualCatalog does not import src/core simulation", () => {
     const mod = "../../src/game/city/cityVisualCatalog.js";
     expect(mod).not.toMatch(/simulation/);
     expect(mod).not.toMatch(/\/core\//);
   });
 
-  it("5: cityVisualCatalog has no random or time dependency", () => {
+  it("6: cityVisualCatalog has no random or time dependency", () => {
     const entry = getCityVisualEntry("dravik");
     expect(entry).toBeDefined();
     expect(typeof entry!.mapAsset).toBe("string");
     expect(entry!.mapAsset.length).toBeGreaterThan(0);
   });
 
-  it("6: BootScene is defined and has correct key", async () => {
+  it("7: BootScene preloads all three Dravos maps", () => {
+    const source = BootScene.prototype.preload.toString();
+    expect(source).toContain("city-map-dravik");
+    expect(source).toContain("city-map-kragen");
+    expect(source).toContain("city-map-raskov");
+  });
+
+  it("8: BootScene is defined and has correct key", async () => {
     const { BootScene } = await import("../../src/game/scenes/BootScene.js");
     expect(BootScene).toBeDefined();
     expect(typeof BootScene).toBe("function");
   });
 
-  it("7: CityScene is defined and has correct key", async () => {
+  it("9: CityScene is defined and has correct key", async () => {
     const { CityScene } = await import("../../src/game/scenes/CityScene.js");
     expect(CityScene).toBeDefined();
     expect(typeof CityScene).toBe("function");
   });
 
-  it("8: catalog does not modify GameState schema", () => {
+  it("10: catalog does not modify GameState schema", () => {
     const entry = getCityVisualEntry("dravik");
     expect(entry).toBeDefined();
     const keys = Object.keys(entry!);
@@ -77,7 +100,7 @@ describe("G6.1 CP2 — City Map", () => {
     expect(keys.length).toBe(3);
   });
 
-  it("9: catalog does not reference save or replay data", () => {
+  it("11: catalog does not reference save or replay data", () => {
     const entry = getCityVisualEntry("dravik");
     const serialized = JSON.stringify(entry);
     expect(serialized).not.toMatch(/save/);
@@ -85,13 +108,14 @@ describe("G6.1 CP2 — City Map", () => {
     expect(serialized).not.toMatch(/timeline/);
   });
 
-  it("10: CityScene has expected methods for dossier and navigation", async () => {
+  it("12: CityScene remains the generic city scene", async () => {
     const { CityScene } = await import("../../src/game/scenes/CityScene.js");
     expect(typeof CityScene.prototype.create).toBe("function");
     expect(typeof CityScene.prototype.init).toBe("function");
+    expect(CityScene.name).toBe("CityScene");
   });
 
-  it("11: CityScene carries pending events and preserves the timeline on round-trip", () => {
+  it("13: CityScene carries pending events and preserves the timeline on round-trip", () => {
     const initSource = citySceneMethods.init.toString();
     const createSource = citySceneMethods.create.toString();
     const operationSource = citySceneMethods.openDossier.toString();
@@ -102,7 +126,7 @@ describe("G6.1 CP2 — City Map", () => {
     expect(operationSource).toMatch(/result\.event/);
   });
 
-  it("12: map zoom and pan transform only the map container", () => {
+  it("14: map zoom and pan transform only the map container", () => {
     const source = citySceneMethods.setupPanZoom.toString();
     expect(source).toMatch(/this\.container\.setScale\(mapScale\)/);
     expect(source).toMatch(/this\.container\.x \+= dx/);
@@ -111,7 +135,14 @@ describe("G6.1 CP2 — City Map", () => {
     expect(source).not.toMatch(/cameras\.main\.scroll/);
   });
 
-  it("13: approved Dravik asset mapping remains unchanged", () => {
+  it("15: approved Dravik asset mapping remains unchanged", () => {
     expect(getCityVisualEntry("dravik")?.mapAsset).toBe("/assets/cities/dravik/city-map.png");
+  });
+
+  it("16: Dravos city dossier stats remain role-specific", () => {
+    const state = createInitialGameState();
+    expect(createCityDossierModel(state, "dravik").affectedStat).toBe("stability");
+    expect(createCityDossierModel(state, "kragen").affectedStat).toBe("internalSecurity");
+    expect(createCityDossierModel(state, "raskov").affectedStat).toBe("publicSupport");
   });
 });

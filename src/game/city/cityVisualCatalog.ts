@@ -8,6 +8,8 @@ export interface CityVisualEntry {
 
 const CATALOG: ReadonlyMap<CityId, CityVisualEntry> = new Map([
   ["dravik", { cityId: "dravik", mapAsset: "/assets/cities/dravik/city-map.png", hasMap: true }],
+  ["kragen", { cityId: "kragen", mapAsset: "/assets/cities/kragen/city-map.png", hasMap: true }],
+  ["raskov", { cityId: "raskov", mapAsset: "/assets/cities/raskov/city-map.png", hasMap: true }],
 ]);
 
 export function getCityVisualEntry(cityId: CityId): CityVisualEntry | undefined {

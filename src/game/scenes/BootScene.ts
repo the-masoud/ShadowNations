@@ -7,6 +7,8 @@ export class BootScene extends Phaser.Scene {
 
   preload(): void {
     this.load.image("city-map-dravik", "/assets/cities/dravik/city-map.png");
+    this.load.image("city-map-kragen", "/assets/cities/kragen/city-map.png");
+    this.load.image("city-map-raskov", "/assets/cities/raskov/city-map.png");
   }
 
   create(): void {
