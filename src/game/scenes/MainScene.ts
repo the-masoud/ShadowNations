@@ -19,6 +19,7 @@ import { renderTurnResolution } from "../ui/renderTurnResolution.js";
 import { renderSaveLoad } from "../ui/renderSaveLoad.js";
 import { renderTimelineLauncher } from "../ui/renderTimelineLauncher.js";
 import { renderTutorial } from "../ui/renderTutorial.js";
+import { hasCityMap } from "../city/cityVisualCatalog.js";
 
 interface MainSceneData {
   readonly state?: GameState;
@@ -71,12 +72,30 @@ export class MainScene extends Phaser.Scene {
     });
 
     const nationRegionController = renderNationRegionUi(this, state, (cityId) => {
-      dossierResult.open(cityId);
+      if (hasCityMap(cityId)) {
+        this.scene.start("CityScene", {
+          state: this.state,
+          cityId,
+          pendingTurnEvents: [...this.pendingTurnEvents],
+          timeline: this.timeline,
+        });
+      } else {
+        dossierResult.open(cityId);
+      }
     });
 
     renderStrategicMap(this, state, (cityId, regionId) => {
       nationRegionController.selectRegion(regionId);
-      dossierResult.open(cityId);
+      if (hasCityMap(cityId)) {
+        this.scene.start("CityScene", {
+          state: this.state,
+          cityId,
+          pendingTurnEvents: [...this.pendingTurnEvents],
+          timeline: this.timeline,
+        });
+      } else {
+        dossierResult.open(cityId);
+      }
     });
 
     renderIntelligenceDashboard(this, state);
