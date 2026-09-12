@@ -10,6 +10,9 @@ const CATALOG: ReadonlyMap<CityId, CityVisualEntry> = new Map([
   ["dravik", { cityId: "dravik", mapAsset: "/assets/cities/dravik/city-map.png", hasMap: true }],
   ["kragen", { cityId: "kragen", mapAsset: "/assets/cities/kragen/city-map.png", hasMap: true }],
   ["raskov", { cityId: "raskov", mapAsset: "/assets/cities/raskov/city-map.png", hasMap: true }],
+  ["solara", { cityId: "solara", mapAsset: "/assets/cities/solara/city-map.png", hasMap: true }],
+  ["aurelis", { cityId: "aurelis", mapAsset: "/assets/cities/aurelis/city-map.png", hasMap: true }],
+  ["helion", { cityId: "helion", mapAsset: "/assets/cities/helion/city-map.png", hasMap: true }],
 ]);
 
 export function getCityVisualEntry(cityId: CityId): CityVisualEntry | undefined {
